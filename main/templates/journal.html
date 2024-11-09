@@ -88,6 +88,13 @@
             overflow-y: auto; /* Allow scrolling if content is too long */
             white-space: pre-line;  /* Prevents unwanted indentation or tabs */
         }
+
+        /* Style for the date */
+        .date {
+            font-size: 14px; /* Match font size with the other date */
+            color: #666; /* Match the color of the other date */
+            margin-bottom: 10px; /* Space between the date and the textbox */
+        }
     </style>
 </head>
 <body>
@@ -104,6 +111,9 @@
                     </div>
                 {% endfor %}
             </div>
+
+            <!-- Date Above View-Only Textbox (matched style with the other date) -->
+            <p class="date">Date: {{ today }}</p>
 
             <!-- View-Only Textbox Above Arrows -->
             <textarea class="view-only-textbox" readonly>

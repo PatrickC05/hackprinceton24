@@ -1,25 +1,139 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Recorder</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Hello World</title>
+    <style>
+        .button-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+
+        .submit-button {
+            padding: 8px 16px;
+            line-height: 1.2;
+            flex-grow: 1;
+            min-width: 100px;
+        }
+
+        .mic-button {
+            background-color: #dc3545;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            flex-shrink: 0;
+        }
+
+        .mic-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        @media (max-width: 600px) {
+            .submit-button, .mic-button {
+                min-width: 80px;
+                flex-grow: 1;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Record Audio and Transcribe</h1>
-    <button id="startRecording">Start Recording</button>
-    <button id="stopRecording" disabled>Stop Recording</button>
-    <p id="transcriptionResult">Transcription will appear here.</p>
+<div class="container">
+    <form action="{% url 'index' %}">
+        <button type="submit" class="home-button">Home</button>
+    </form>
+    <form action="{% url 'profile' %}">
+        <button type="profile" class="edit-sliders-button">Edit Sliders</button>
+    </form>
+    <div class="title">{{ user.first_name }}'s DATE Session</div>
+    <div class="output-box" id="outputBox">Hi, {{ user.first_name }}!</div>
+    <form id="inputForm" class="input-form">
+        {% csrf_token %}
+        <textarea class="input-box" name="user_input" placeholder="What's on your mind?" id="userInput"></textarea>
+        <div class="button-container">
+            <button type="button" class="submit-button" onclick="submitForm()">Submit</button>
+            <button type="button" class="mic-button" onclick="startRecording()" id="micButton">
+                <!-- Initial microphone icon -->
+                <svg id="micIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+            </button>
+        </div>
+    </form>
+</div>
+<script>
+    async function submitForm() {
+        const userInputElement = document.getElementById('userInput');
+        const userInput = userInputElement.value;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+        if (!userInput.trim()) {
+            alert("Please enter something before submitting.");
+            return;
+        }
+    
+        // Display the user's input in the output box
+        const outputBox = document.getElementById('outputBox');
+        outputBox.innerHTML += "<br><br><strong>You:</strong> " + userInput;
+    
+        // Clear the input box
+        userInputElement.value = "";
+    
+        try {
+            const response = await fetch("{% url 'respond' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: new URLSearchParams({
+                    'user_input': userInput
+                })
+            });
+    
+            const result = await response.json();
+            outputBox.innerHTML += "<br><br><strong>LeSisstant:</strong> " + (result.text || "No response from server.");
+            outputBox.scrollTop = outputBox.scrollHeight;
+        } catch (error) {
+            console.error("Error:", error);
+            outputBox.innerHTML += "<br><br><strong>Error:</strong> Unable to submit the form.";
+            outputBox.scrollTop = outputBox.scrollHeight;
+        }
+    }
+    
+    // Listen for Enter key on the input field to submit the form
+    document.getElementById('userInput').addEventListener("keypress", function(event) {
+        if (event.key === "Enter" && !event.shiftKey) { 
+            event.preventDefault();
+            submitForm();
+        }
+    });
 
-    <script>
-        let mediaRecorder;
-        let audioChunks = [];
-        const startButton = document.getElementById('startRecording');
-        const stopButton = document.getElementById('stopRecording');
-        const transcriptionResult = document.getElementById('transcriptionResult');
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
 
-        // Start recording
-        startButton.addEventListener("click", async () => {
+    async function startRecording() {
+        const micButton = document.getElementById("micButton");
+        const micIcon = document.getElementById("micIcon");
+        
+        if (!isRecording) {
             audioChunks = [];
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
@@ -30,55 +144,54 @@
 
             mediaRecorder.onstop = async () => {
                 const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const outputBox = document.getElementById('outputBox');
 
-                // Log the audio blob size to check if recording worked
-                console.log("Audio Blob size:", audioBlob.size);
-
-                // Play back the recorded audio for confirmation
-                const audioURL = URL.createObjectURL(audioBlob);
-                const audio = new Audio(audioURL);
-                audio.play();
+                // Display the recorded audio message in the output box
+                outputBox.innerHTML += "<br><br><strong>You:</strong> [Audio Message]";
+                outputBox.scrollTop = outputBox.scrollHeight;
 
                 // Send the audio to the server for transcription
                 await sendAudioToServer(audioBlob);
             };
 
             mediaRecorder.start();
-            startButton.disabled = true;
-            stopButton.disabled = false;
-            transcriptionResult.textContent = "Recording...";
-        });
-
-        // Stop recording
-        stopButton.addEventListener("click", () => {
+            isRecording = true;
+            micIcon.innerHTML = `<line x1="5" y1="5" x2="19" y2="19"/>`; // Change to "stop" icon
+        } else {
             mediaRecorder.stop();
-            startButton.disabled = false;
-            stopButton.disabled = true;
-            transcriptionResult.textContent = "Processing transcription...";
-        });
-
-        // Function to send audio to server
-        async function sendAudioToServer(audioBlob) {
-            const formData = new FormData();
-            formData.append("audio", audioBlob, "recording.wav");  // Check if this is appending correctly
-
-            try {
-                const response = await fetch('/respond/', {  // Ensure URL matches your Django URL pattern
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}',
-                    },
-                    body: formData
-                });
-
-                // Handle response
-                const result = await response.json();
-                transcriptionResult.textContent = result.transcription || "Error: Unable to transcribe audio.";
-            } catch (error) {
-                console.error("Error sending transcription:", error);
-                transcriptionResult.textContent = `Error: ${error.message}`;
-            }
+            isRecording = false;
+            micIcon.innerHTML = `
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+            `;
         }
-    </script>
+    }
+
+    async function sendAudioToServer(audioBlob) {
+        const formData = new FormData();
+        formData.append("audio", audioBlob, "recording.wav");
+
+        try {
+            const response = await fetch('/respond/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+            const outputBox = document.getElementById('outputBox');
+            outputBox.innerHTML += "<br><br><strong>LeSisstant:</strong> " + (result.transcription || "No response from server.");
+            outputBox.scrollTop = outputBox.scrollHeight;
+        } catch (error) {
+            console.error("Error sending transcription:", error);
+            document.getElementById('outputBox').innerHTML += "<br><br><strong>Error:</strong> Unable to transcribe audio.";
+            document.getElementById('outputBox').scrollTop = document.getElementById('outputBox').scrollHeight;
+        }
+    }
+</script>
 </body>
 </html>
