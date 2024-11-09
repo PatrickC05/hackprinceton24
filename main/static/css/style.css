@@ -10,6 +10,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: #9A48D0;
+    min-height: 100vh;
 }
 
 /* Main header styling */
@@ -30,12 +32,158 @@ header {
 .main-option {
     flex: 1;
     padding: 20px;
-    background-color: #f2f2f2;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    background-color: #E4B7E5;
+    border: 1px solid #000;
+    border-radius: 10px;
     text-align: center;
+    min-height: 70vh;
 }
 
 .subwindow h2 {
     margin-bottom: 10px;
+}
+.login-container {
+    width: 500px;
+    padding: 40px;
+    margin-top: 70px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-container h2 {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.login-container h4 {
+    font-weight: 500;
+    color: #FF0000;
+    margin-bottom: 20px;
+}
+
+.login-container a {
+    display: block;
+    margin-bottom: 20px
+
+}
+
+/* Input group styling */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 14px;
+    color: #666;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+
+.signup-link {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+.signup-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+.signup-container {
+    width: 500px;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-top: 50px; /* Add top margin for spacing */
+}
+
+.signup-container h2 {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Input group styling */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 14px;
+    color: #666;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Button styling */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-link {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+.login-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.logout-button {
+    position: absolute;     
+    top: 20px;               
+    right: 20px;
+    width: 80px;
+    padding: 10px;
+    background-color: #EE4B2B;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.goals-button {
+    background-color: #FF70A6;
 }

@@ -11,24 +11,64 @@
 <body>
     <!-- Main Header Section -->
     <header>
-        <h1>Main Page Title</h1>
-        <p>This is the main header text at the top of the page.</p>
+        <h1>LeSisstant</h1>
     </header>
 
     <!-- Subwindows Section -->
+    {% if user.is_authenticated %}
+    <form action="{% url 'logout' %}">
+        <button type="logout" class="logout-button">Log Out</button>
+    </form>
     <div class="main-app-options">
         <div class="main-option goals">
             <h2>Goals</h2>
             <p>This is some text inside the first subwindow.</p>
+            <div>
+                {% for goal in goalstoday %}
+                <div class="goal">
+                    <h3>{{ goal.goal.name }}</h3>
+                    {% if goal.completed %}
+                    <p>Completed</p>
+                    {% else %}
+                    <p>Not Completed</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="goal-description">
+                <h3>You have completed {{ goalscompleted }} out of your {{ count }} goals today </h3>
+            </div>
+            <form action="{% url 'goals' %}">
+                <button type="submit" class="goals-button">View My Goals</button>
+            </form>
         </div>
         <div class="main-option therapy">
             <h2>Therapy</h2>
             <p>This is some text inside the second subwindow.</p>
+            <form action="{% url 'goals' %}">
+                <button type="submit" class="goals-button">View My Goals</button>
+            </form>
         </div>
         <div class="main-option journal">
             <h2>Journal</h2>
             <p>This is some text inside the third subwindow.</p>
         </div>
     </div>
+    {% else %}
+    <div class="login-container">
+        <h2> Have an account? Login here</h2>
+        <form action="{% url 'login' %}">
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <div class="signup-container">
+        <h2> Join LeSisstant! Sign up here</h2>
+        <form action="{% url 'signup' %}">
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+        
+    {% endif %}
 </body>
 </html>
