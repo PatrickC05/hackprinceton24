@@ -55,3 +55,6 @@ def therapy(request):
 
 def new_goal(request):
     return render(request, 'new_goal.html')
+
+def profile(request):
+    return render(request, 'profile.html')

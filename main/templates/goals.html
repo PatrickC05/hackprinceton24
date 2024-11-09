@@ -45,18 +45,6 @@
                 <button type="submit" class="goals-button">Log (Un)Succesful</button>
             </form>
         </div>
-        <div class="home-view-goal">
-            <div class="goal-description">
-                <h3>You are X for Y this TIME PERIOD </h3>
-            </div>
-            <form action="{% url 'goals' %}">
-                <button type="submit" class="goals-button">Calendar</button>
-            </form>
-            <!-- this should toggle to successful/unsuccessful based on completed or not? -->
-            <form action="{% url 'goals' %}">
-                <button type="submit" class="goals-button">Log (Un)Succesful</button>
-            </form>
-        </div>
         <!-- END FOR LOOP HERE -->
         <form action="{% url 'goals' %}">
             <button type="new_goal" class="new-goal-button">+</button>
