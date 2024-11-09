@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -12,8 +11,16 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            justify-content: flex-start; /* Keeps buttons aligned to the left */
         }
-        
+
+        .submit-button {
+            padding: 8px 16px;
+            line-height: 1.2;
+            flex-grow: 1; /* Allows the submit button to take up remaining space */
+            min-width: 100px; /* Ensures the button stays at a reasonable size */
+        }
+
         .mic-button {
             background-color: #dc3545;
             color: white;
@@ -23,13 +30,32 @@
             border-radius: 5px;
             cursor: pointer;
             padding: 6px;
-            margin-left: 10px;
-            vertical-align: top;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            flex-shrink: 0; /* Prevents the mic button from shrinking */
         }
 
         .mic-button svg {
-            width: 100%;
-            height: 100%;
+            width: 18px;
+            height: 18px;
+        }
+
+        .output-box {
+            overflow-y: auto;
+            max-height: 400px;
+            background-color: #e0b3ff;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+        }
+
+        @media (max-width: 600px) {
+            .submit-button, .mic-button {
+                min-width: 80px; /* Ensures both buttons are sufficiently wide */
+                flex-grow: 1; /* Allow both buttons to grow and share space equally */
+            }
         }
     </style>
 </head>
@@ -42,9 +68,7 @@
         <button type="profile" class="edit-sliders-button">Edit Sliders</button>
     </form>
     <div class="title">{{ user.first_name }}'s DATE Session</div>
-    <div class="output-box" id="outputBox">
-        GPT THERAPY OUTPUT GOES HERE
-    </div>
+    <div class="output-box" id="outputBox">Hi, {{ user.first_name }}!</div>
     <form id="inputForm" class="input-form">
         {% csrf_token %}
         <textarea class="input-box" name="user_input" placeholder="What's on your mind?" id="userInput"></textarea>
@@ -61,5 +85,71 @@
         </div>
     </form>
 </div>
+<script>
+    async function submitForm() {
+        const userInputElement = document.getElementById('userInput');
+        const userInput = userInputElement.value;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const outputBox = document.getElementById('outputBox');
+    
+        console.log("User input:", userInput);
+        console.log("CSRF token:", csrfToken);
+    
+        if (!userInput.trim()) {
+            alert("Please enter something before submitting.");
+            return;
+        }
+    
+        // Display the user's input in the output box
+        outputBox.innerHTML += "<br><br><strong>You:</strong> " + userInput;
+    
+        // Clear the input box
+        userInputElement.value = "";
+    
+        // Scroll to the bottom of the output box
+        outputBox.scrollTop = outputBox.scrollHeight;
+    
+        try {
+            const response = await fetch("{% url 'respond' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: new URLSearchParams({
+                    'user_input': userInput
+                })
+            });
+    
+            console.log("Response status:", response.status);
+    
+            if (!response.ok) {
+                throw new Error("Network response was not ok " + response.statusText);
+            }
+    
+            const result = await response.json();
+            console.log("Server response:", result);
+    
+            // Add LeSisstant's response to the output box
+            outputBox.innerHTML += "<br><br><strong>LeSisstant:</strong> " + (result.text || "No response from server.");
+            
+            // Scroll to the bottom after adding LeSisstant's response
+            outputBox.scrollTop = outputBox.scrollHeight;
+    
+        } catch (error) {
+            console.error("Error:", error);
+            outputBox.innerHTML += "<br><br><strong>Error:</strong> Unable to submit the form.";
+            outputBox.scrollTop = outputBox.scrollHeight; // Scroll to bottom if there's an error
+        }
+    }
+    
+    // Listen for Enter key on the input field to submit the form
+    document.getElementById('userInput').addEventListener("keypress", function(event) {
+        if (event.key === "Enter" && !event.shiftKey) { // Check if Enter is pressed without Shift
+            event.preventDefault(); // Prevent newline in the text area
+            submitForm(); // Call the submit function
+        }
+    });
+</script>
 </body>
 </html>

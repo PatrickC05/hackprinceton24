@@ -55,9 +55,16 @@
         </div>
         <div class="main-option journal">
             <h2>Journal</h2>
-            <p>This is where past entry summaries will go<br>11/4:<br>11/3:<br>11/2<br>11/1<br></p>
+            <p>Past entries</p>
+            <div class="journal-entries">
+                {% for entry in journal|slice:":5" %}
+                <div class="journal-entry">
+                    <p>{{ entry.date }}: {{ entry.entry|slice:":200" }}...</p>
+                    <br>
+                </div>
+                {% endfor %}
             <form action="{% url 'journal' %}">
-                <button type="submit" class="journal-button">New Journal Entry</button>
+                <button type="submit" class="journal-button">View Journal</button>
             </form>
         </div>
     </div>

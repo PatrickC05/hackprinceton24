@@ -4,6 +4,7 @@ from main.models import User, Goal, GoalDay, Journal, Therapy
 from django.http import JsonResponse, HttpResponseNotFound, HttpResponse
 import datetime
 from main.util import speechtotext
+import os
 
 
 # Create your views here.
@@ -13,12 +14,14 @@ def index(request):
         count = goalstoday.count()
         goalscompleted = goalstoday.filter(completed=True).count()
         lasttherapy = Therapy.objects.filter(user=request.user).order_by('-date').first()
-        journal = Journal.objects.filter(user=request.user).order_by('-date').first()
+        journal = Journal.objects.filter(user=request.user).order_by('-date').all()
         return render(request, 'index.html', {'goalstoday': goalstoday, 'count': count, 'goalscompleted': goalscompleted, 'lasttherapy': lasttherapy, 'journal': journal})
     return render(request, 'index.html')
 
 def signup(request):
     return render(request, 'signup.html')
+
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -52,10 +55,22 @@ def signup(request):
     return render(request, 'signup.html')
 
 def goals(request):
+    if request.method == 'POST':
+        frequency = request.POST.get('frequency', "daily")
+        frequencyDict = {"daily": "1", "weekly": "2", "monthly": "3"}
+        ty = frequencyDict[frequency]
+        today = datetime.date.today()
+        goal = Goal.objects.create(user=request.user, name=request.POST['goal'], start_date=today, end_date=request.POST['date'], type=ty)
+        day = datetime.date.today()
+        endday = datetime.datetime.strptime(request.POST['date'], "%Y-%m-%d").date()
+        while day <= endday:
+            GoalDay.objects.create(goal=goal, date=day)
+            day += datetime.timedelta(days=1)
+        return redirect('goals')
     usergoals = Goal.objects.filter(user=request.user).filter(end_date__gte=datetime.date.today())
     for goal in usergoals:
-        goal.days = GoalDay.objects.filter(goal=goal, date__gte=datetime.date.today()).count()
-        goal.completed = GoalDay.objects.filter(goal=goal, date__gte=datetime.date.today(), completed=True).count()
+        goal.days = GoalDay.objects.filter(goal=goal, date__lte=datetime.date.today()).count()
+        goal.completed = GoalDay.objects.filter(goal=goal, date__lte=datetime.date.today(), completed=True).count()
         goal.next = GoalDay.objects.filter(goal=goal, date__gte=datetime.date.today()).order_by('date').first()
     return render(request, 'goals.html', {'goals': usergoals})
 
@@ -71,17 +86,43 @@ def profile(request):
     return render(request, 'profile.html')
 
 def journal(request):
-    return render(request, 'journal.html')
+    today = datetime.date.today()
+    journal = Journal.objects.filter(user=request.user)
+    todayjournal = journal.filter(date=today).first()
+    if request.method == 'POST':
+        if todayjournal:
+            todayjournal.entry = request.POST['journal_entry']
+            todayjournal.save()
+        else:
+            Journal.objects.create(user=request.user, date=today, entry=request.POST['journal_entry'])
+        return redirect('journal')
+    return render(request, 'journal.html', {'today': today, 'journal': journal, 'todayjournal': todayjournal})
 
 def respond(request):
     if request.method == 'POST':
         audio = request.FILES.get('audio')
         if audio:
-            return JsonResponse({'text': speechtotext.main(audio)})
+            with open('temp.wav', 'wb') as f:
+                for chunk in audio.chunks():
+                    f.write(chunk)
+            speechtotext.convert_audio('temp.wav', 'temp_converted.wav')
+
+            transcription = speechtotext.transcribe_audio('temp_converted.wav')
+            
+            os.remove('temp.wav')
+            os.remove('temp_converted.wav')
+        else:
+            user_input = request.POST.get('user_input', '')
+        
+            if not user_input:
+                return JsonResponse({'text': 'No input provided'})
+            else:
+                transcription = user_input
+        
+        return JsonResponse({'text': transcription})
             
 
     return HttpResponseNotFound()
 
 def test(request):
     return render(request, 'test.html')
-
