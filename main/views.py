@@ -49,3 +49,9 @@ def signup(request):
 
 def goals(request):
     return render(request, 'goals.html')
+
+def therapy(request):
+    return render(request, 'therapy.html')
+
+def new_goal(request):
+    return render(request, 'new_goal.html')

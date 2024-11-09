@@ -10,8 +10,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #9A48D0;
-    min-height: 100vh;
+    background-color: #9A48D0
 }
 
 /* Main header styling */
@@ -186,4 +185,42 @@ button {
 
 .goals-button {
     background-color: #FF70A6;
+}
+
+.goals-home-view {
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap to the next row */
+    gap: 20px; /* Space between goal boxes */
+    padding: 10px;
+    justify-content: center; 
+}
+
+
+.home-view-goal {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    width: 100%; 
+    max-width: 800px; 
+    background-color: #E4B7E5;
+    border: 1px solid #000;
+    border-radius: 10px;
+    text-align: center;
+    min-height: 40vh;
+}
+
+.home-button {
+    position: absolute;     
+    top: 20px;               
+    left: 20px;
+    width: 80px;
+    padding: 10px;
+    background-color: #FF70A6;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
 }

@@ -1,0 +1,29 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Hello World</title>
+</head>
+<body>
+    <div class="container">
+        <!-- edit sliders will be on profile page see figma -->
+        <form action="{% url 'profile' %}">
+            <button type="profile" class="edit-sliders-button">Edit Sliders</button>
+        </form>
+
+        <div class="title">{{ user.first_name }}'s {{ DATE }} Session</div>
+
+        <div class="output-box">
+            {{GPT THERAPY OUTPUT GOES HERE}}
+        </div>
+
+        <textarea class="input-box" placeholder="What's on your mind?"></textarea>
+
+        <div class="therapy-question">How are you feeling today?</div>
+    </div>
+</body>
+</html>

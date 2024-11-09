@@ -1,0 +1,66 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Hello World</title>
+</head>
+<body>
+    <!-- Main Header Section -->
+    <header>
+        <h1>{{ user.first_name }}'s Goals</h1>
+    </header>
+    <form action="{% url 'index' %}">
+        <button type="submit" class="home-button">Home</button>
+    </form>
+    <form action="{% url 'logout' %}">
+        <button type="logout" class="logout-button">Log Out</button>
+    </form>
+    <div class="goals-home-view">
+        <!-- FOR LOOP HERE LOOPING THORUGH EACH GOAL -->
+        <div class="home-view-goal">
+            <div class="goal-description">
+                <h3>You are X for Y this TIME PERIOD </h3>
+            </div>
+            <form action="{% url 'goals' %}">
+                <button type="submit" class="goals-button">Calendar</button>
+            </form>
+            <!-- this should toggle to successful/unsuccessful based on completed or not? -->
+            <form action="{% url 'goals' %}">
+                <button type="submit" class="goals-button">Log (Un)Succesful</button>
+            </form>
+        </div>
+        <div class="home-view-goal">
+            <div class="goal-description">
+                <h3>You are X for Y this TIME PERIOD </h3>
+            </div>
+            <form action="{% url 'goals' %}">
+                <button type="submit" class="goals-button">Calendar</button>
+            </form>
+            <!-- this should toggle to successful/unsuccessful based on completed or not? -->
+            <form action="{% url 'goals' %}">
+                <button type="submit" class="goals-button">Log (Un)Succesful</button>
+            </form>
+        </div>
+        <div class="home-view-goal">
+            <div class="goal-description">
+                <h3>You are X for Y this TIME PERIOD </h3>
+            </div>
+            <form action="{% url 'goals' %}">
+                <button type="submit" class="goals-button">Calendar</button>
+            </form>
+            <!-- this should toggle to successful/unsuccessful based on completed or not? -->
+            <form action="{% url 'goals' %}">
+                <button type="submit" class="goals-button">Log (Un)Succesful</button>
+            </form>
+        </div>
+        <!-- END FOR LOOP HERE -->
+        <form action="{% url 'goals' %}">
+            <button type="new_goal" class="new-goal-button">+</button>
+        </form>
+    </div>
+</body>
+</html>
