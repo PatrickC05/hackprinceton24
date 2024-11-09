@@ -11,6 +11,9 @@
 <body>
     <div class="container">
         <!-- edit sliders will be on profile page see figma -->
+        <form action="{% url 'index' %}">
+            <button type="submit" class="home-button">Home</button>
+        </form>
         <form action="{% url 'profile' %}">
             <button type="profile" class="edit-sliders-button">Edit Sliders</button>
         </form>
@@ -21,7 +24,12 @@
             GPT THERAPY OUTPUT GOES HERE
         </div>
 
-        <textarea class="input-box" placeholder="What's on your mind?"></textarea>
+        <!-- NEEDS CHANG EIDK HOW TO PASS BACKEND -->
+        <form class="input-form" action="{% url 'goals' %}" method="post">
+            {% csrf_token %}
+            <textarea class="input-box" name="user_input" placeholder="What's on your mind?"></textarea>
+            <button type="submit" class="submit-button">Submit</button>
+        </form>
 
     </div>
 </body>

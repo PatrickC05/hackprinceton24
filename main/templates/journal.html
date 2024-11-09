@@ -1,0 +1,36 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Hello World</title>
+</head>
+<body>
+    <div class="title">{{ user.first_name }}'s Journal</div>
+    <div class="book-container">
+        <!-- Left Page: Previous Experiences -->
+        <div class="book-page left-page">
+            <h2>Previous Experiences GPT SUMMARY</h2>
+            <div class="previous-entries">
+                <!-- Content loaded from backend -->
+                <p>{{ previous_experiences }}</p>
+            </div>
+        </div>
+    
+        <!-- Right Page: Journal Entry Form -->
+        <div class="book-page right-page">
+            <p class="date">Date: {{ current_date }}</p>
+            <!-- CHANGE FORM TO GET GPT SUMMARY -->
+            <form action="{% url 'index' %}" method="post">
+                {% csrf_token %}
+                <textarea class="journal-textarea" name="journal_entry" placeholder="Write your thoughts here..."></textarea>
+                <button type="submit" class="submit-button">Submit Entry</button>
+            </form>
+        </div>
+    </div>
+    
+    </body>
+</html>

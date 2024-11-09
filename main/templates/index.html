@@ -50,7 +50,10 @@
         </div>
         <div class="main-option journal">
             <h2>Journal</h2>
-            <p>This is some text inside the third subwindow.</p>
+            <p>This is where past entry summaries will go<br>11/4:<br>11/3:<br>11/2<br>11/1<br></p>
+            <form action="{% url 'journal' %}">
+                <button type="submit" class="journal-button">New Journal Entry</button>
+            </form>
         </div>
     </div>
     {% else %}
