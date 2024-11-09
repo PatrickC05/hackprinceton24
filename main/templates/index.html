@@ -22,7 +22,6 @@
     <div class="main-app-options">
         <div class="main-option goals">
             <h2>Goals</h2>
-            <p>This is some text inside the first subwindow.</p>
             <div>
                 {% for goal in goalstoday %}
                 <div class="goal">
@@ -44,7 +43,7 @@
         </div>
         <div class="main-option therapy">
             <h2>Therapy</h2>
-            <p>This is some text inside the second subwindow.</p>
+            <p>This is where the summary of past sessions will go<br>11/4:<br>11/3:<br>11/2<br>11/1<br></p>
             <form action="{% url 'therapy' %}">
                 <button type="submit" class="therapy-button">Open Therapy</button>
             </form>

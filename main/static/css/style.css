@@ -224,3 +224,151 @@ button {
     font-size: 16px;
     cursor: pointer;
 }
+
+
+.edit-sliders-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 120px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.edit-sliders-button:hover {
+    background-color: #0056b3;
+}
+.output-box {
+    width: 700px;
+    height: 300px;
+    padding: 15px;
+    border: 1px solid #0000;
+    border-radius: 5px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    background-color: #E4B7E5;
+}
+
+.title {
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.input-box {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: none;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.profile-container {
+    width: 90%;
+    max-width: 600px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+.slider-container {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.slider-label {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.slider-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.slider-left-label,
+.slider-right-label {
+    font-size: 14px;
+    color: #666;
+    width: 50px; 
+    text-align: center;
+}
+
+/* Styling for the slider itself */
+.slider {
+    -webkit-appearance: none; /* Remove default styling */
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #ddd;
+    outline: none;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+    margin: 0 10px; /* Space between the slider and the labels */
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background-color: #007bff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background-color: #007bff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.save-button {
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #007bff;
+    color: #ffffff;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}
+
