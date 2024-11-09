@@ -17,13 +17,15 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 PLAY_HT_USER_ID = os.getenv("PLAY_HT_USER_ID")
 PLAY_HT_API_KEY = os.getenv("PLAY_HT_API_KEY")
 
-# Confirm credentials for debugging
-print("PLAY_HT_USER_ID:", PLAY_HT_USER_ID)
-print("PLAY_HT_API_KEY:", PLAY_HT_API_KEY)
-
 samplerate = 44100  # samples per second
 threshold = 0.1  # sensitivity to silence
 chunk_size = samplerate  # Full second chunks for silence detection
+
+# Load Whisper model
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=FutureWarning)
+    model = whisper.load_model("base")
+
 
 # Silence detection
 def is_silent(data, threshold):
@@ -31,10 +33,11 @@ def is_silent(data, threshold):
     print(f"Silence detected: {silence_detected}")
     return silence_detected
 
+
 # Record until silence is detected
 def record_until_silence():
     print("Recording...")
-    with sd.InputStream(samplerate=samplerate, channels=1, device="MacBook Pro Microphone") as stream:
+    with sd.InputStream(samplerate=samplerate, channels=1) as stream:
         audio_data = []
         silence_counter = 0
         while True:
@@ -53,6 +56,7 @@ def record_until_silence():
     print("Recording completed.")
     return audio_data
 
+
 # Function to convert audio to Whisper-compatible format using FFmpeg
 def convert_audio(input_path, output_path):
     print("Converting audio to Whisper-compatible format...")
@@ -62,20 +66,6 @@ def convert_audio(input_path, output_path):
     except ffmpeg.Error as e:
         print(f"Error during audio conversion: {e.stderr.decode()}")
 
-# Record and save raw audio
-audio = record_until_silence()
-raw_audio_path = "output_audio_raw.wav"
-wav.write(raw_audio_path, samplerate, audio)
-print("Raw audio saved.")
-
-# Convert raw audio to Whisper-compatible format
-converted_audio_path = "output_audio_converted.wav"
-convert_audio(raw_audio_path, converted_audio_path)
-
-# Load Whisper model
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", category=FutureWarning)
-    model = whisper.load_model("base")
 
 # Transcribe converted audio
 def transcribe_audio(audio_path):
@@ -84,73 +74,95 @@ def transcribe_audio(audio_path):
     print("Transcription complete.")
     return result['text']
 
-transcribed_text = transcribe_audio(converted_audio_path)
-print(f"Transcribed Text: {transcribed_text}")
+
+
+
+
+def main(audio_file):
+    # Record and save raw audio
+    # audio = record_until_silence()
+    # raw_audio_path = "output_audio_raw.wav"
+    # wav.write(raw_audio_path, samplerate, audio)
+    # print("Raw audio saved.")
+
+    # Convert raw audio to Whisper-compatible format
+    # converted_audio_path = "output_audio_converted.wav"
+    # convert_audio(audio_file, converted_audio_path)
+
+    transcribed_text = transcribe_audio(audio_file)
+    print(f"Transcribed Text: {transcribed_text}")
+
+    return transcribed_text
+
+
+
+
+
 
 # Generate GPT response
-def get_gpt_response(conversation_history):
-    print("Generating GPT response...")
-    try:
-        # Format conversation history for Chat API
-        messages = [{"role": "user", "content": msg.split(": ")[1]} if "User" in msg else {"role": "assistant", "content": msg.split(": ")[1]} for msg in conversation_history]
-        messages.insert(0, {"role": "system", "content": "You are a helpful assistant."})
+# def get_gpt_response(conversation_history):
+#     print("Generating GPT response...")
+#     try:
+#         # Format conversation history for Chat API
+#         messages = [{"role": "user", "content": msg.split(": ")[1]} if "User" in msg else {"role": "assistant", "content": msg.split(": ")[1]} for msg in conversation_history]
+#         messages.insert(0, {"role": "system", "content": "You are a helpful assistant."})
 
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-            max_tokens=100,
-            temperature=0.7
-        )
-        print("GPT response generated.")
-        return response.choices[0].message['content']
-    except Exception as e:
-        print(f"Error generating GPT response: {e}")
-        return "I'm sorry, but I couldn't process that request right now."
+#         response = openai.ChatCompletion.create(
+#             model="gpt-3.5-turbo",
+#             messages=messages,
+#             max_tokens=100,
+#             temperature=0.7
+#         )
+#         print("GPT response generated.")
+#         return response.choices[0].message['content']
+#     except Exception as e:
+#         print(f"Error generating GPT response: {e}")
+#         return "I'm sorry, but I couldn't process that request right now."
 
-# Initialize conversation
-conversation_history = ["User: Hello!"]
+# # Initialize conversation
+# conversation_history = ["User: Hello!"]
 
-# Main loop
-while True:
-    if transcribed_text.lower() in ["exit", "quit", "stop"]:
-        print("Conversation ended.")
-        break
+# # Main loop
+# while True:
+#     if transcribed_text.lower() in ["exit", "quit", "stop"]:
+#         print("Conversation ended.")
+#         break
 
-    if transcribed_text and f"User: {transcribed_text}" not in conversation_history:
-        conversation_history.append(f"User: {transcribed_text}")
-    else:
-        print("No valid new input detected; awaiting further input.")
-        continue
+#     if transcribed_text and f"User: {transcribed_text}" not in conversation_history:
+#         conversation_history.append(f"User: {transcribed_text}")
+#     else:
+#         print("No valid new input detected; awaiting further input.")
+#         continue
 
-    gpt_response = get_gpt_response(conversation_history)
-    print(f"GPT Response: {gpt_response}")
+#     gpt_response = get_gpt_response(conversation_history)
+#     print(f"GPT Response: {gpt_response}")
 
-    client = Client(user_id=PLAY_HT_USER_ID, api_key=PLAY_HT_API_KEY)
-    options = TTSOptions(voice="en_us_male")
+#     client = Client(user_id=PLAY_HT_USER_ID, api_key=PLAY_HT_API_KEY)
+#     options = TTSOptions(voice="en_us_male")
 
-    def generate_speech(gpt_response, client, options):
-        try:
-            response_audio = b""
-            for chunk in client.tts(gpt_response, options):
-                response_audio += chunk
-            return response_audio
-        except Exception as e:
-            print(f"Error generating speech: {e}")
-            return None
+#     def generate_speech(gpt_response, client, options):
+#         try:
+#             response_audio = b""
+#             for chunk in client.tts(gpt_response, options):
+#                 response_audio += chunk
+#             return response_audio
+#         except Exception as e:
+#             print(f"Error generating speech: {e}")
+#             return None
 
-    response_audio = generate_speech(gpt_response, client, options)
-    if response_audio is not None:
-        audio_data = np.frombuffer(response_audio, dtype=np.int16).astype(np.int16)
-        sd.play(audio_data, samplerate)
-        sd.wait()
-        print("Playback completed.")
-    else:
-        print("No audio generated; skipping playback.")
+#     response_audio = generate_speech(gpt_response, client, options)
+#     if response_audio is not None:
+#         audio_data = np.frombuffer(response_audio, dtype=np.int16).astype(np.int16)
+#         sd.play(audio_data, samplerate)
+#         sd.wait()
+#         print("Playback completed.")
+#     else:
+#         print("No audio generated; skipping playback.")
 
-    print("\nSay something new...")
-    audio = record_until_silence()
-    wav.write(raw_audio_path, samplerate, audio)
+#     print("\nSay something new...")
+#     audio = record_until_silence()
+#     wav.write(raw_audio_path, samplerate, audio)
 
-    convert_audio(raw_audio_path, converted_audio_path)
-    transcribed_text = transcribe_audio(converted_audio_path)
-    print(f"Transcribed Text: {transcribed_text}")
+#     convert_audio(raw_audio_path, converted_audio_path)
+#     transcribed_text = transcribe_audio(converted_audio_path)
+#     print(f"Transcribed Text: {transcribed_text}")

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Recorder</title>
+</head>
+<body>
+    <h1>Record Audio and Transcribe</h1>
+    <button id="startRecording">Start Recording</button>
+    <button id="stopRecording" disabled>Stop Recording</button>
+    <p id="transcriptionResult">Transcription will appear here.</p>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        const startButton = document.getElementById('startRecording');
+        const stopButton = document.getElementById('stopRecording');
+        const transcriptionResult = document.getElementById('transcriptionResult');
+
+        // Start recording
+        startButton.addEventListener("click", async () => {
+            audioChunks = [];
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+
+                // Log the audio blob size to check if recording worked
+                console.log("Audio Blob size:", audioBlob.size);
+
+                // Play back the recorded audio for confirmation
+                const audioURL = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioURL);
+                audio.play();
+
+                // Send the audio to the server for transcription
+                await sendAudioToServer(audioBlob);
+            };
+
+            mediaRecorder.start();
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            transcriptionResult.textContent = "Recording...";
+        });
+
+        // Stop recording
+        stopButton.addEventListener("click", () => {
+            mediaRecorder.stop();
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            transcriptionResult.textContent = "Processing transcription...";
+        });
+
+        // Function to send audio to server
+        async function sendAudioToServer(audioBlob) {
+            const formData = new FormData();
+            formData.append("audio", audioBlob, "recording.wav");  // Check if this is appending correctly
+
+            try {
+                const response = await fetch('/respond/', {  // Ensure URL matches your Django URL pattern
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: formData
+                });
+
+                // Handle response
+                const result = await response.json();
+                transcriptionResult.textContent = result.transcription || "Error: Unable to transcribe audio.";
+            } catch (error) {
+                console.error("Error sending transcription:", error);
+                transcriptionResult.textContent = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

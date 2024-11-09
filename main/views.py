@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from main.models import User, Goal, GoalDay, Journal
+from main.models import User, Goal, GoalDay, Journal, Therapy
+from django.http import JsonResponse, HttpResponseNotFound, HttpResponse
 import datetime
+from main.util import speechtotext
 
 
 # Create your views here.
@@ -10,7 +12,9 @@ def index(request):
         goalstoday = GoalDay.objects.filter(date=datetime.date.today(), goal__user=request.user)
         count = goalstoday.count()
         goalscompleted = goalstoday.filter(completed=True).count()
-        return render(request, 'index.html', {'goalstoday': goalstoday, 'count': count, 'goalscompleted': goalscompleted})
+        lasttherapy = Therapy.objects.filter(user=request.user).order_by('-date').first()
+        journal = Journal.objects.filter(user=request.user).order_by('-date').first()
+        return render(request, 'index.html', {'goalstoday': goalstoday, 'count': count, 'goalscompleted': goalscompleted, 'lasttherapy': lasttherapy, 'journal': journal})
     return render(request, 'index.html')
 
 def signup(request):
@@ -48,7 +52,14 @@ def signup(request):
     return render(request, 'signup.html')
 
 def goals(request):
-    return render(request, 'goals.html')
+    usergoals = Goal.objects.filter(user=request.user).filter(end_date__gte=datetime.date.today())
+    for goal in usergoals:
+        goal.days = GoalDay.objects.filter(goal=goal, date__gte=datetime.date.today()).count()
+        goal.completed = GoalDay.objects.filter(goal=goal, date__gte=datetime.date.today(), completed=True).count()
+        goal.next = GoalDay.objects.filter(goal=goal, date__gte=datetime.date.today()).order_by('date').first()
+    return render(request, 'goals.html', {'goals': usergoals})
+
+
 
 def therapy(request):
     return render(request, 'therapy.html')
@@ -61,3 +72,16 @@ def profile(request):
 
 def journal(request):
     return render(request, 'journal.html')
+
+def respond(request):
+    if request.method == 'POST':
+        audio = request.FILES.get('audio')
+        if audio:
+            return JsonResponse({'text': speechtotext.main(audio)})
+            
+
+    return HttpResponseNotFound()
+
+def test(request):
+    return render(request, 'test.html')
+

@@ -19,7 +19,9 @@ def initialize_session(session_id):
         "explore their thoughts and feelings, fostering personal insight and emotional well-being. Keep responses gentle, "
         "encouraging, and focused on helping users arrive at their own insights without judgment or specific advice. Keep "
         "responses to one paragraph max. Never say that you are unable to provide help or to ask a professional – always "
-        " try to be as helpful as possible."
+        " try to be as helpful as possible. Do not give direct advice, guide them in the right direction. "
+        " Ask the user about their goals and help them set up daily, weekly, or monthly goals and advise them to journal."
+        " If they mention wanting to set a goal, direct them to the link: https://localhost:8000/goals/ and include this in your response."
 )
         # Initialize the message history with the system prompt
         user_sessions[session_id] = [{"role": "system", "content": training_text}]
@@ -81,5 +83,9 @@ print("Assistant:", assistant_reply)
 
 assistant_reply = get_response(session_id)
 print("Assistant:", assistant_reply)
+
+assistant_reply = get_response(session_id)
+print("Assistant:", assistant_reply)
+
 
     

@@ -1,36 +1,65 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>Hello World</title>
+    <style>
+        .button-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .mic-button {
+            background-color: #dc3545;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 6px;
+            margin-left: 10px;
+            vertical-align: top;
+        }
+
+        .mic-button svg {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- edit sliders will be on profile page see figma -->
-        <form action="{% url 'index' %}">
-            <button type="submit" class="home-button">Home</button>
-        </form>
-        <form action="{% url 'profile' %}">
-            <button type="profile" class="edit-sliders-button">Edit Sliders</button>
-        </form>
-
-        <div class="title">{{ user.first_name }}'s  DATE Session</div>
-
-        <div class="output-box">
-            GPT THERAPY OUTPUT GOES HERE
-        </div>
-
-        <!-- NEEDS CHANG EIDK HOW TO PASS BACKEND -->
-        <form class="input-form" action="{% url 'goals' %}" method="post">
-            {% csrf_token %}
-            <textarea class="input-box" name="user_input" placeholder="What's on your mind?"></textarea>
-            <button type="submit" class="submit-button">Submit</button>
-        </form>
-
+<div class="container">
+    <form action="{% url 'index' %}">
+        <button type="submit" class="home-button">Home</button>
+    </form>
+    <form action="{% url 'profile' %}">
+        <button type="profile" class="edit-sliders-button">Edit Sliders</button>
+    </form>
+    <div class="title">{{ user.first_name }}'s DATE Session</div>
+    <div class="output-box" id="outputBox">
+        GPT THERAPY OUTPUT GOES HERE
     </div>
+    <form id="inputForm" class="input-form">
+        {% csrf_token %}
+        <textarea class="input-box" name="user_input" placeholder="What's on your mind?" id="userInput"></textarea>
+        <div class="button-container">
+            <button type="button" class="submit-button" onclick="submitForm()">Submit</button>
+            <button type="button" class="mic-button" onclick="startRecording()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+            </button>
+        </div>
+    </form>
+</div>
 </body>
 </html>

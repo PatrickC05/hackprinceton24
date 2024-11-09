@@ -10,45 +10,48 @@
 </head>
 <body>
     <!-- Main Header Section -->
-    <header>
-        <h1>{{ user.first_name }}'s Goals</h1>
-    </header>
-    <form action="{% url 'index' %}">
-        <button type="submit" class="home-button">Home</button>
-    </form>
-    <form action="{% url 'logout' %}">
-        <button type="logout" class="logout-button">Log Out</button>
-    </form>
-    <div class="goals-home-view">
-        <!-- FOR LOOP HERE LOOPING THORUGH EACH GOAL -->
-        <div class="home-view-goal">
-            <div class="goal-description">
-                <h3>You are X for Y this TIME PERIOD </h3>
-            </div>
-            <form action="{% url 'goals' %}">
-                <button type="submit" class="goals-button">Calendar</button>
-            </form>
-            <!-- this should toggle to successful/unsuccessful based on completed or not? -->
-            <form action="{% url 'goals' %}">
-                <button type="submit" class="goals-button">Log (Un)Succesful</button>
-            </form>
-        </div>
-        <div class="home-view-goal">
-            <div class="goal-description">
-                <h3>You are X for Y this TIME PERIOD </h3>
-            </div>
-            <form action="{% url 'goals' %}">
-                <button type="submit" class="goals-button">Calendar</button>
-            </form>
-            <!-- this should toggle to successful/unsuccessful based on completed or not? -->
-            <form action="{% url 'goals' %}">
-                <button type="submit" class="goals-button">Log (Un)Succesful</button>
-            </form>
-        </div>
-        <!-- END FOR LOOP HERE -->
-        <form action="{% url 'goals' %}">
-            <button type="new_goal" class="new-goal-button">+</button>
+     {% if user.is_authenticated %}
+        <header>
+            <h1>{{ user.first_name }}'s Goals</h1>
+        </header>
+        <form action="{% url 'index' %}">
+            <button type="submit" class="home-button">Home</button>
         </form>
-    </div>
+        <form action="{% url 'logout' %}">
+            <button type="logout" class="logout-button">Log Out</button>
+        </form>
+        <div class="goals-home-view">
+            {% for goal in goals %}
+                <div class="home-view-goal">
+                
+                        <h2>{{ goal.name }}</h2>
+                        <h3> You are {{ goal.completed }} for {{ goal.days }}
+                            <form action="{% url 'goals' %}">
+                    <button type="submit" class="goals-button">Calendar</button>
+                    </form>
+                    <!-- this should toggle to successful/unsuccessful based on completed or not? -->
+                    <form action="{% url 'goals' %}">
+                        <button type="submit" class="goals-button">Log (Un)Succesful</button>
+                    </form>
+                </div>
+            {% endfor %}
+                
+            </div>
+            <!-- END FOR LOOP HERE -->
+            <form action="{% url 'goals' %}">
+                <button type="new_goal" class="new-goal-button">+</button>
+            </form>
+        </div>
+    {% else %}
+        <header>
+            <h1>Goals</h1>
+        </header>
+        <form action="{% url 'login' %}">
+            <button type="login" class="login-button">Log In</button>
+        </form>
+        <form action="{% url 'signup' %}">
+            <button type="signup" class="signup-button">Sign Up</button>
+        </form>
+    {% endif %}
 </body>
 </html>
