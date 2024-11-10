@@ -7,10 +7,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/goals.css' %}">
+    <style>
+        .goals-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .home-view-goal, .new-goal-button {
+            flex: 0 0 calc(33.33% - 14px);  /* Exact 3 per row with gap consideration */
+        }
+
+        #goalContainer {
+            position: absolute;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .goal-input, .frequency-select, .date-picker {
+            margin: 5px 0;
+            width: 100%;
+        }
+
+        /* Pink boxes for all the other elements */
+        .home-view-goal {
+            background-color: pink;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .goals-button {
+            background-color: pink;
+            color: black;
+        }
+
+        /* Green Plus Button and its container */
+        #newGoalButton {
+            background-color: green; /* Green background */
+            color: white; /* White text for the plus sign */
+            border: none;
+            border-radius: 50%; /* Circular button */
+            font-size: 50px; /* Increase font size for a bigger plus sign */
+            width: 70px; /* Increase button width */
+            height: 70px; /* Increase button height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        #newGoalButton:hover {
+            background-color: darkgreen; /* Darker green on hover */
+        }
+
+        /* Green form container */
+        #newGoalContainer {
+            background-color: green;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .goal-input, .frequency-select, .date-picker {
+            background-color: #e7f9e7; /* Light green background for inputs */
+            border-radius: 5px;
+        }
+
+        /* Submit button with green style */
+        .submit-button {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background-color: darkgreen;
+        }
+    </style>
     <title>Hello World</title>
 </head>
 <body>
-    <!-- Main Header Section -->
     {% if user.is_authenticated %}
         <header>
             <h1>{{ user.first_name }}'s Goals</h1>
@@ -22,101 +107,57 @@
             <button type="logout" class="logout-button">Log Out</button>
         </form>
         <div class="goals-home-view">
-            {% for goal in goals %}
-                <div class="home-view-goal">
-                    <h2>{{ goal.name }}</h2>
-                    <h3> You are {{ goal.completed }} for {{ goal.days }}</h3>
-                    <form action="{% url 'goals' %}">
-                        <button type="submit" class="goals-button">Log (Un)Successful</button>
+            <div class="goals-grid">
+                {% for goal in goals %}
+                    <div class="home-view-goal">
+                        <h2>{{ goal.name }}</h2>
+                        <h3> You are {{ goal.completed }} for {{ goal.days }}</h3>
+                        <form action="{% url 'goals' %}">
+                            <button type="submit" class="goals-button">Log (Un)Successful</button>
+                        </form>
+                    </div>
+                {% endfor %}
+                
+                <!-- Plus Button to Add New Goal -->
+                <div class="new-goal-button" id="newGoalContainer">
+                    <button type="button" id="newGoalButton">+</button>
+                    <form action="{% url 'goals' %}" id="newGoalForm" method="post" style="display: none;">
+                        {% csrf_token %}
+                        <input type="text" class="goal-input" name="goal" placeholder="Enter goal" required>
+                        <select class="frequency-select" name="frequency" required>
+                            <option value="" disabled selected>Select frequency</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                        <input type="date" class="date-picker" name="date" required>
+                        <button type="submit" class="submit-button">Submit</button>
                     </form>
                 </div>
-            {% endfor %}
+            </div>
         </div>
-        
-        <!-- Plus Button to Add New Goal -->
-        <form action="{% url 'goals' %}" id="newGoalForm" method="post">
-            {% csrf_token %}
-            <button type="button" id="newGoalButton" class="new-goal-button">+</button>
-            <div id="goalContainer"></div>
-        </form>
 
-        <!-- JavaScript to handle button click -->
         <script>
-            let goalAdded = false;  // Flag to track if a goal input is already added
-            
             document.getElementById("newGoalButton").onclick = function() {
-                if (goalAdded) {
-                    return; // Prevent adding another goal input until the current one is submitted
+                const button = this;
+                const form = document.getElementById("newGoalForm");
+                
+                // Toggle form visibility and the plus button
+                if (form.style.display === "none" || form.style.display === "") {
+                    form.style.display = "block";
+                    button.style.display = "none"; // Hide the plus button
                 }
-                
-                const goalContainer = document.getElementById("goalContainer");
-
-                // Create input field for the goal
-                const inputField = document.createElement("input");
-                inputField.setAttribute("type", "text");
-                inputField.setAttribute("placeholder", "Enter goal");
-                inputField.classList.add("goal-input"); // Apply the class for styling
-                inputField.required = true; // Make the input field required
-                inputField.name = "goal";
-                
-                // Create frequency dropdown
-                const frequencySelect = document.createElement("select");
-                frequencySelect.name = "frequency";
-                frequencySelect.classList.add("frequency-select");
-                frequencySelect.required = true; // Make the select field required
-                frequencySelect.setAttribute("placeholder", "Select frequency");
-                frequencySelect.innerHTML = "<option value='' disabled selected>Select frequency</option>";
-                frequencySelect.classList.add("frequency-select");
-                frequencySelect.name = "frequency";
-                const dailyOption = document.createElement("option");
-                dailyOption.value = "daily";
-                dailyOption.text = "Daily";
-                const weeklyOption = document.createElement("option");
-                weeklyOption.value = "weekly";
-                weeklyOption.text = "Weekly";
-                const monthlyOption = document.createElement("option");
-                monthlyOption.value = "monthly";
-                monthlyOption.text = "Monthly";
-                frequencySelect.appendChild(dailyOption);
-                frequencySelect.appendChild(weeklyOption);
-                frequencySelect.appendChild(monthlyOption);
-
-                // Create date picker input
-                const dateInput = document.createElement("input");
-                dateInput.setAttribute("type", "date");
-                dateInput.classList.add("date-picker");
-                dateInput.required = true; // Make the input field required
-                dateInput.name = "date";
-
-                // Create submit button for the goal
-                const submitButton = document.createElement("button");
-                submitButton.setAttribute("type", "submit");
-                submitButton.classList.add("submit-button");
-                submitButton.innerHTML = "Submit";
-
-                // Append all elements to the container
-                goalContainer.appendChild(inputField);
-                goalContainer.appendChild(frequencySelect);
-                goalContainer.appendChild(dateInput);
-                goalContainer.appendChild(submitButton);
-
-                // Disable the new goal button to prevent further input boxes from being added
-                goalAdded = true;
-                
-                // Optionally, hide the "+" button to prevent more goals until the current is submitted
-                document.getElementById("newGoalButton").disabled = true;
             };
 
-            // Prevent the user from submitting the form unless all fields are filled
+            // Reset form and show button if submission fails
             document.getElementById("newGoalForm").onsubmit = function(event) {
                 const goalInput = document.querySelector(".goal-input");
                 const frequencySelect = document.querySelector(".frequency-select");
                 const dateInput = document.querySelector(".date-picker");
 
-                // Check if all fields are filled
                 if (!goalInput.value || !frequencySelect.value || !dateInput.value) {
                     alert("Please fill out all fields before submitting.");
-                    event.preventDefault(); // Prevent form submission
+                    event.preventDefault();
                 }
             };
         </script>

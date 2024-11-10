@@ -15,24 +15,57 @@
     </form>
     <div class="title">{{ user.first_name }}'s {{ today }} Session</div>
     <div class="sliders">
-        <form method="post">
+        <form id="preferences" method="post">
             {% csrf_token %}
             <div class="slider-container">
                 <label for="scale">Directness of Feedback:</label>
-                <input type="range" name="scale" id="scale" min="1" max="100" value="{{ scale }}" oninput="updateSliderValue(this.value)">
+                <input type="range" name="scale" id="scale" min="1" max="100" value="{{ user.therapyscale }}">
                 <div class="slider-labels">
                     <span>Support</span>
                     <span style="float: right;">Solutions</span>
                 </div>
             </div>
-            <div class="toggle-container">
-                <label class="switch">Voice:</label>
-                <input type="range" min="0" max="1" id="voiceToggle" name="voice" >
-                
-                <span id="voiceLabel">Male</span>
+            <div class="slider-container">
+                <label class="switch" for="voiceToggle" id="voiceLabel">Voice: {% if user.malevoice %}Male{% else %}Female{% endif %}</label>
+                <input type="range" min="0" max="1" id="voiceToggle" name="voice" value="{% if user.malevoice %}1{% else %}0{% endif %}">
             </div>
+            <button type="submit" class="save-button" id="preferencesubmit">Save preferences</button>
         </form>
     </div>
+
+    <script>
+        document.getElementById('preferences').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch("{% url 'therapy' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok " + response.statusText);
+                }
+            }).catch(error => {
+                console.error("Error:", error);
+                alert("Unable to save preferences.");
+            });
+        });
+
+        document.getElementById('voiceToggle').addEventListener('input', function() {
+            value = document.getElementById('voiceToggle').value;
+            if (value == 0) {
+                document.getElementById('voiceLabel').innerHTML = "Voice: Female";
+            } else {
+                document.getElementById('voiceLabel').innerHTML = "Voice: Male";
+            }
+        });
+    
+    </script>
 
     <div class="output-box" id="outputBox">Hi, {{ user.first_name }}!</div>
     <form id="inputForm" class="input-form">
@@ -91,7 +124,13 @@
             thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> " + (result.response || "No response from server.");
             thinkingMessage.innerHTML = thinkingMessage.innerHTML.replace('https://localhost:8000/goals/', '<a href="{% url "goals" %}">Goals</a>');
             outputBox.scrollTop = outputBox.scrollHeight;
-        
+
+            // Play the audio response if available
+            if (result.audio) {
+                let audioElement = new Audio("data:audio/mp3;base64," + result.audio);
+                audioElement.play();
+            }
+
         } catch (error) {
             console.error("Error:", error);
             thinkingMessage.innerHTML = "<br><strong>Error:</strong> Unable to submit the form.";
@@ -159,6 +198,9 @@
     }
 
     async function sendAudioToServer(audioBlob, userAudioMessage, thinkingMessage) {
+        const outputBox = document.getElementById('outputBox');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
         const formData = new FormData();
         formData.append("audio", audioBlob, "recording.wav");
 
@@ -166,7 +208,7 @@
             const response = await fetch("{% url 'respond' %}", {
                 method: 'POST',
                 headers: {
-                    'X-CSRFToken': '{{ csrf_token }}'
+                    'X-CSRFToken': csrfToken
                 },
                 body: formData
             });
@@ -175,6 +217,13 @@
             userAudioMessage.innerHTML = "<br><br><strong>You:</strong> " + (result.text || "[Audio Message]");
             thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> " + (result.response || "No response from server.");
             outputBox.scrollTop = outputBox.scrollHeight;
+
+            // Play the audio response if available
+            if (result.audio) {
+                console.log("Here!")
+                let audioElement = new Audio("data:audio/mp3;base64," + result.audio);
+                audioElement.play();
+            }
 
         } catch (error) {
             console.error("Error sending transcription:", error);

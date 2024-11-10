@@ -4,9 +4,10 @@ from main.models import User, Goal, GoalDay, Journal, Therapy
 from django.http import JsonResponse, HttpResponseNotFound, HttpResponse
 import datetime
 from main.util import speechtotext, api
-from google.cloud import texttospeech
+import requests
 import os
 import base64
+from dotenv import load_dotenv
 
 
 # Create your views here.
@@ -80,6 +81,11 @@ def goals(request):
 
 def therapy(request):
     today = datetime.date.today()
+    if request.method == 'POST':
+        request.user.therapyscale = request.POST['scale']
+        request.user.malevoice = request.POST.get('voice', False) == '1'
+        request.user.save()
+        return HttpResponse('Success')
     return render(request, 'therapy.html', {'today': today})
 
 def new_goal(request):
@@ -103,6 +109,9 @@ def journal(request):
     return render(request, 'journal.html', {'today': today, 'journal': journal, 'todayjournal': todayjournal})
 
 def respond(request):
+    load_dotenv()
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+    
     if request.method == 'POST':
         audio = request.FILES.get('audio')
         if audio:
@@ -125,26 +134,40 @@ def respond(request):
         api.initialize_session(request.user)
         assistant_response = api.generate_assistant_response(request.user, transcription)
 
+        audio_base64 = ""
+
         if audio:
-            client = texttospeech.TextToSpeechClient()
-
-            # Set up the request for Text-to-Speech
-            synthesis_input = texttospeech.SynthesisInput(text=transcription)
-            voice = texttospeech.VoiceSelectionParams(
-                language_code="en-US",
-                name="en-US-Wavenet-J",
-                ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
-            )
-            audio_config = texttospeech.AudioConfig(
-                audio_encoding=texttospeech.AudioEncoding.MP3
-            )
-
+            # Google Cloud Text-to-Speech API endpoint with API key
+            url = f"https://texttospeech.googleapis.com/v1/text:synthesize?key={GOOGLE_API_KEY}"
+            if request.user.malevoice:
+                voice = "en-US-Journey-D"
+            else:
+                voice = "en-US-Journey-O"
+            
+            # Set up the payload for the Text-to-Speech API
+            payload = {
+                "input": {"text": assistant_response},
+                "voice": {
+                    "languageCode": "en-US",
+                    "name": voice
+                },
+                "audioConfig": {"audioEncoding": "MP3"}
+            }
+            
             # Perform the Text-to-Speech request
-            response = client.synthesize_speech(
-                input=synthesis_input, voice=voice, audio_config=audio_config
-            )
+            headers = {"Content-Type": "application/json"}
+            response = requests.post(url, json=payload, headers=headers)
+            
+            # Check if the request was successful
+            if response.status_code == 200:
+                # Extract audio content and encode to base64
+                audio_content = response.json().get("audioContent")
+                if audio_content:
+                    audio_base64 = audio_content  # This is already base64 encoded from the API
+            else:
+                print("Error with Text-to-Speech API:", response.json())
 
         # Return both the transcription and the assistant's response
-        return JsonResponse({'text': transcription, 'response': assistant_response})
+        return JsonResponse({'text': transcription, 'response': assistant_response, 'audio': audio_base64})
 
     return HttpResponseNotFound()

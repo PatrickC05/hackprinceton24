@@ -52,16 +52,11 @@
     width: 80%;
 }
 
-.toggle-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: flex-start;
-    text-align: center;
-    margin: 0;
-    width: 100%;
+#voiceToggle {
+    width: 50px;
 }
 
-#voiceToggle {
-    width: 60px;
+#preferencesubmit {
+    width: 20%;
+    text-align: center;
 }

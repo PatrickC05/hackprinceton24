@@ -23,13 +23,13 @@
         <div class="main-option goals">
             <h2>Goals</h2>
             <div>
-                {% for goal in goalstoday %}
+                {% for goal in goalstoday|slice:":5" %}
                 <div class="goal">
                     <h3>{{ goal.goal.name }}</h3>
                     {% if goal.completed %}
-                    <p>Completed</p>
+                    <p>✔️</p> <!-- Green checkmark for completed -->
                     {% else %}
-                    <p>Not Completed</p>
+                    <p>❌</p> <!-- Red X for not completed -->
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -44,11 +44,12 @@
         <div class="main-option therapy">
             <h2>Therapy</h2>
             {% if lasttherapy %}
-            <p>Here's a summary of your last therapy session on {{ lasttherapy.date }}:</p>
+            <p> {{ lasttherapy.date }} Therapy Session Summary:</p>
             <p>{{ lasttherapy.summary }}</p>
             {% else %}
             <p>You have not had a therapy session yet.</p>
             {% endif %}
+    
             <form action="{% url 'therapy' %}">
                 <button type="submit" class="therapy-button">Open Therapy</button>
             </form>
