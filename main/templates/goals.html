@@ -26,13 +26,56 @@
                     <div class="home-view-goal">
                         <h2>{{ goal.name }}</h2>
                         <h3> You are {{ goal.completed }} for {{ goal.days }}</h3>
-                        <form action="{% url 'goals' %}">
+                        <form action="{% url 'updategoal' %}" method="post" class="mark-success">
                             {% csrf_token %}
                             <input type="hidden" name="goal_id" value="{{ goal.id }}">
                             <button type="submit" class="goals-button">Mark {% if goal.completed %}un{% endif %}successful</button>
                         </form>
                     </div>
                 {% endfor %}
+
+                <script>
+                    document.querySelectorAll(".mark-success").forEach(form => {
+                        form.onsubmit = function(event) {
+                            const goalId = this.querySelector("input[name=goal_id]").value;
+                            const button = this.querySelector("button");
+
+                            fetch("/goals", {
+                                method: "POST",
+                                body: JSON.stringify({
+                                    goal_id: goalId
+                                }),
+                                headers: {
+                                    "X-CSRFToken": getCookie("csrftoken")
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(result => {
+                                if (result.success) {
+                                    button.textContent = `Mark ${result.completed ? "un" : ""}successful`;
+                                    button.blur();
+                                }
+                            });
+
+                            event.preventDefault();
+                        };
+                    });
+
+                    function getCookie(name) {
+                        let cookieValue = null;
+                        if (document.cookie && document.cookie !== "") {
+                            const cookies = document.cookie.split(";");
+                            for (let i = 0; i < cookies.length; i++) {
+                                const cookie = cookies[i].trim();
+                                if (cookie.substring(0, name.length + 1) === name + "=") {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+                </script>
                 
                 <!-- Plus Button to Add New Goal -->
                 <div class="new-goal-button" id="newGoalContainer">

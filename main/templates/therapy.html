@@ -89,58 +89,74 @@
     </form>
 </div>
 <script>
-    async function submitForm() {
-        const userInputElement = document.getElementById('userInput');
-        const userInput = userInputElement.value;
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        const outputBox = document.getElementById('outputBox');
-        
-        if (!userInput.trim()) {
-            alert("Please enter something before submitting.");
-            return;
+    function typeText(element, text, speed=200) {
+        let i = 0;
+
+        function type() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            }
         }
 
-        outputBox.innerHTML += "<br><br><strong>You:</strong> " + userInput;
-        userInputElement.value = "";
+        type();
+    }
+
+    async function submitForm() {
+    const userInputElement = document.getElementById('userInput');
+    const userInput = userInputElement.value;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const outputBox = document.getElementById('outputBox');
+    
+    if (!userInput.trim()) {
+        alert("Please enter something before submitting.");
+        return;
+    }
+
+    outputBox.innerHTML += "<br><br><strong>You:</strong> " + userInput;
+    userInputElement.value = "";
+    outputBox.scrollTop = outputBox.scrollHeight;
+
+    let thinkingMessage = document.createElement("div");
+    thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> ";
+    outputBox.appendChild(thinkingMessage);
+
+    try {
+        const response = await fetch("{% url 'respond' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrfToken
+            },
+            body: new URLSearchParams({
+                'user_input': userInput
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Network response was not ok " + response.statusText);
+        }
+
+        const result = await response.json();
+
+        // Use typeText to gradually display the assistant's response
+        typeText(thinkingMessage, result.response || "No response from server.");
+        
         outputBox.scrollTop = outputBox.scrollHeight;
 
-        let thinkingMessage = document.createElement("div");
-        thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> ...";
-        outputBox.appendChild(thinkingMessage);
-
-        try {
-            const response = await fetch("{% url 'respond' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrfToken
-                },
-                body: new URLSearchParams({
-                    'user_input': userInput
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error("Network response was not ok " + response.statusText);
-            }
-
-            const result = await response.json();
-            thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> " + (result.response || "No response from server.");
-            thinkingMessage.innerHTML = thinkingMessage.innerHTML.replace('https://localhost:8000/goals/', '<a href="{% url "goals" %}">Goals</a>');
-            outputBox.scrollTop = outputBox.scrollHeight;
-
-            // Play the audio response if available
-            if (result.audio) {
-                let audioElement = new Audio("data:audio/mp3;base64," + result.audio);
-                audioElement.play();
-            }
-
-        } catch (error) {
-            console.error("Error:", error);
-            thinkingMessage.innerHTML = "<br><strong>Error:</strong> Unable to submit the form.";
-            outputBox.scrollTop = outputBox.scrollHeight;
+        // Play the audio response if available
+        if (result.audio) {
+            let audioElement = new Audio("data:audio/mp3;base64," + result.audio);
+            audioElement.play();
         }
+
+    } catch (error) {
+        console.error("Error:", error);
+        thinkingMessage.innerHTML = "<br><strong>Error:</strong> Unable to submit the form.";
+        outputBox.scrollTop = outputBox.scrollHeight;
     }
+}
 
     document.getElementById('userInput').addEventListener("keypress", function(event) {
         if (event.key === "Enter" && !event.shiftKey) {

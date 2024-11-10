@@ -77,7 +77,13 @@ def goals(request):
         goal.next = GoalDay.objects.filter(goal=goal, date__gte=datetime.date.today()).order_by('date').first()
     return render(request, 'goals.html', {'goals': usergoals})
 
-
+def updategoal(request):
+    if request.method == 'POST':
+        goal = Goal.objects.get(id=request.POST['goal'])
+        goal.completed = not goal.completed
+        goal.save()
+        return HttpResponse('Success')
+    return HttpResponseNotFound()
 
 def therapy(request):
     today = datetime.date.today()
