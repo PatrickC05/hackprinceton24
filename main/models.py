@@ -30,7 +30,7 @@ class GoalDay(models.Model):
 class Journal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
-    entry = models.TextField()
+    entry = models.TextField(null=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.date}"
