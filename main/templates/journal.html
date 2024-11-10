@@ -11,6 +11,12 @@
 </head>
 <body>
     <div class="title">{{ user.first_name }}'s Journal</div>
+    <form action="{% url 'index' %}">
+        <button type="submit" class="home-button">Home</button>
+    </form>
+    <form action="{% url 'logout' %}">
+        <button type="logout" class="logout-button">Log Out</button>
+    </form>
     <div class="book-container">
         <!-- Left Page: Previous Experiences -->
         <div class="book-page left-page">

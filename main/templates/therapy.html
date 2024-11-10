@@ -13,6 +13,9 @@
     <form action="{% url 'index' %}">
         <button type="submit" class="home-button">Home</button>
     </form>
+    <form action="{% url 'logout' %}">
+        <button type="logout" class="logout-button">Log Out</button>
+    </form>
     <div class="title">{{ user.first_name }}'s {{ today }} Session</div>
     <div class="sliders">
         <form id="preferences" method="post">

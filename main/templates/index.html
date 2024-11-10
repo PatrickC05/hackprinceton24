@@ -11,7 +11,7 @@
 <body>
     <!-- Main Header Section -->
     <header>
-        <h1>LeSisstant</h1>
+        <div class="title">LeSisstant</div>
     </header>
 
     <!-- Subwindows Section -->
@@ -22,12 +22,13 @@
     <div class="main-app-options">
         <div class="main-option goals">
             <h2>Goals</h2>
+            <br>
             <div>
                 {% for goal in goalstoday|slice:":5" %}
                 <div class="goal">
                     <h3>{{ goal.goal.name }}</h3>
                     {% if goal.completed %}
-                    <p> ✅</p> <!-- Green checkmark for completed -->
+                    <p>✅</p> <!-- Green checkmark for completed -->
                     {% else %}
                     <p>❌</p> <!-- Red X for not completed -->
                     {% endif %}
@@ -49,11 +50,11 @@
         </div>
         <div class="main-option journal">
             <h2>Journal</h2>
-
+            <br>
             <div class="journal-entries">
                 {% for entry in journal|slice:":5" %}
                 <div class="journal-entry">
-                    <p>{{ entry.date }}: {{ entry.entry|slice:":200" }}...</p>
+                    <p><strong>{{ entry.date }}</strong>: {{ entry.entry|slice:":200" }}...</p>
                     <br>
                 </div>
                 {% endfor %}

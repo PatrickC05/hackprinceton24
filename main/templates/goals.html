@@ -12,7 +12,7 @@
 <body>
     {% if user.is_authenticated %}
         <header>
-            <h1>{{ user.first_name }}'s Goals</h1>
+            <div class="title">{{ user.first_name }}'s Goals</div>
         </header>
         <form action="{% url 'index' %}">
             <button type="submit" class="home-button">Home</button>
@@ -27,7 +27,9 @@
                         <h2>{{ goal.name }}</h2>
                         <h3> You are {{ goal.completed }} for {{ goal.days }}</h3>
                         <form action="{% url 'goals' %}">
-                            <button type="submit" class="goals-button">Log (Un)Successful</button>
+                            {% csrf_token %}
+                            <input type="hidden" name="goal_id" value="{{ goal.id }}">
+                            <button type="submit" class="goals-button">Mark {% if goal.completed %}un{% endif %}successful</button>
                         </form>
                     </div>
                 {% endfor %}
@@ -44,7 +46,7 @@
                             <option value="weekly">Weekly</option>
                             <option value="monthly">Monthly</option>
                         </select>
-                        <input type="date" class="date-picker" name="date" required>
+                        <input type="date" class="date-picker" name="date" placeholder="Goal End Date" required>
                         <button type="submit" class="submit-button">Submit</button>
                     </form>
                 </div>

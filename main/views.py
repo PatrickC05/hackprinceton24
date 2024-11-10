@@ -17,7 +17,7 @@ def index(request):
         count = goalstoday.count()
         goalscompleted = goalstoday.filter(completed=True).count()
         lasttherapy = Therapy.objects.filter(user=request.user).order_by('-date').first()
-        journal = Journal.objects.filter(user=request.user).order_by('-date').all()
+        journal = Journal.objects.filter(user=request.user).filter(date__lt=datetime.date.today()).order_by('-date')
         return render(request, 'index.html', {'goalstoday': goalstoday, 'count': count, 'goalscompleted': goalscompleted, 'lasttherapy': lasttherapy, 'journal': journal})
     return render(request, 'index.html')
 
