@@ -39,14 +39,15 @@
                     <button type="button" id="newGoalButton">+</button>
                     <form action="{% url 'goals' %}" id="newGoalForm" method="post" style="display: none;">
                         {% csrf_token %}
-                        <input type="text" class="goal-input" name="goal" placeholder="Enter goal" required>
+                        <input type="text" class="goal-input" name="goal" placeholder="Goal" required>
                         <select class="frequency-select" name="frequency" required>
-                            <option value="" disabled selected>Select frequency</option>
+                            <option value="" disabled selected>Frequency</option>
                             <option value="daily">Daily</option>
                             <option value="weekly">Weekly</option>
                             <option value="monthly">Monthly</option>
                         </select>
-                        <input type="date" class="date-picker" name="date" placeholder="Goal End Date" required>
+                        <label for="goalEndDate">Goal End Date</label>
+                        <input type="date" class="date-picker" name="date" id="goalEndDate" required>
                         <button type="submit" class="submit-button">Submit</button>
                     </form>
                 </div>
