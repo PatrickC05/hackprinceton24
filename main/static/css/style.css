@@ -39,6 +39,7 @@ header {
 
 /* Each individual subwindow */
 .main-option {
+    position: relative;
     flex: 1;
     padding: 20px;
     background-color: #E4B7E5;
@@ -196,16 +197,34 @@ button {
 .goals-button {
     margin-top: 10px;
     background-color: #FF70A6;
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    max-width: 320px;
 }
 
 .journal-button {
     margin-top: 10px;
     background-color: #FF70A6;
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    max-width: 320px;
 }
 
 .therapy-button {
     margin-top: 10px;
     background-color: #FF70A6;
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    max-width: 320px;
 }
 
 .goals-home-view {
