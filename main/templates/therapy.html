@@ -94,6 +94,7 @@
 
         function type() {
             if (i < text.length) {
+                outputBox.scrollTop = outputBox.scrollHeight;
                 element.innerHTML += text.charAt(i);
                 i++;
                 setTimeout(type, speed);
@@ -140,9 +141,12 @@
 
             const result = await response.json();
 
-            // Use typeText to gradually display the assistant's response
-            typeText(thinkingMessage, result.response || "No response from server.");
-            
+            // Replace URL in the result response text
+            const modifiedResponse = (result.response || "No response from server.")
+                .replace('https://localhost:8000/goals/', '<a href="{% url "goals" %}">Goals</a>');
+
+            // Use typeText to gradually display the modified assistant's response
+            typeText(thinkingMessage, modifiedResponse);
             outputBox.scrollTop = outputBox.scrollHeight;
 
             // Play the audio response if available

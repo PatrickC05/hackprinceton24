@@ -22,23 +22,23 @@
     color: #4CAF50;  /* Green color on hover */
 }
 
-
-
-
 /* Hide the divs by default */
 .previous-entry {
     display: none;
-    margin: 0 auto;
+    width: 100%;  /* Full width of the container */
 }
 
-/* Show the first entry initially */
 .previous-entry.active {
-    display: block;
+    display: flex; /* Show the active entry */
+    flex-direction: column;
+    align-items: center;
 }
 
 .previous-entries {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* Center entries horizontally */
     margin-bottom: 20px;
-    position: relative;
     padding-bottom: 40px; /* Ensure space for the arrows */
     width: 100%; /* Full width of the left page */
     margin-top: 20px;
@@ -62,6 +62,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center; /* Center content vertically */
+    padding: 20px;
 }
 
 .right-page {
@@ -71,6 +73,7 @@
 /* Style for the view-only textbox */
 .view-only-textbox {
     width: 90%;  /* Take up 90% of the page width */
+    max-width: 500px; /* Limit max width to keep it centered */
     height: 40vh; /* Medium height */
     padding: 10px;
     background-color: #f4f4f4;  /* Light gray background */
@@ -78,8 +81,6 @@
     resize: none;  /* Disable resizing */
     font-size: 14px;
     color: #333;
-    text-align: left;  /* Left align the text inside the textbox */
-    text-indent: 0;  /* No indentation */
     overflow-y: auto; /* Allow scrolling if content is too long */
     white-space: pre-line;  /* Prevents unwanted indentation or tabs */
 }

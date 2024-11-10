@@ -79,8 +79,7 @@ def goals(request):
 
 def updategoal(request):
     if request.method == 'POST':
-        print(request.POST)
-        goal = GoalDay.objects.get(id=request.POST['id'])
+        goal = GoalDay.objects.get(id=request.POST['goal_id'])
         goal.completed = not goal.completed
         goal.save()
         return HttpResponse('Success')

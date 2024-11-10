@@ -37,28 +37,26 @@
                 <script>
                     document.querySelectorAll(".mark-success").forEach(form => {
                         form.onsubmit = function(event) {
+                            event.preventDefault();
                             const goalId = this.querySelector("input[name=goal_id]").value;
                             const button = this.querySelector("button");
                             console.log(goalId);
 
                             fetch("{% url 'updategoal' %}", {
                                 method: "POST",
-                                body: JSON.stringify({
-                                    goal_id: goalId
-                                }),
                                 headers: {
                                     "X-CSRFToken": getCookie("csrftoken")
                                 }
+                                body: JSON.stringify({
+                                    goal_id: goalId
+                                }),
                             })
                             .then(response => response.json())
                             .then(result => {
                                 if (result.success) {
                                     button.textContent = `Mark ${result.completed ? "un" : ""}successful`;
-                                    button.blur();
                                 }
                             });
-
-                            event.preventDefault();
                         };
                     });
 
