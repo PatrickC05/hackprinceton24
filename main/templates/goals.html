@@ -39,8 +39,9 @@
                         form.onsubmit = function(event) {
                             const goalId = this.querySelector("input[name=goal_id]").value;
                             const button = this.querySelector("button");
+                            console.log(goalId);
 
-                            fetch("/goals", {
+                            fetch("{% url 'updategoal' %}", {
                                 method: "POST",
                                 body: JSON.stringify({
                                     goal_id: goalId

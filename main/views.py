@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 # Create your views here.
 def index(request):
     if request.user.is_authenticated:
-        goalstoday = GoalDay.objects.filter(date=datetime.date.today(), goal__user=request.user)
+        goalstoday = GoalDay.objects.filter(date=datetime.date.today(), goal__user=request.user).order_by('completed')
         count = goalstoday.count()
         goalscompleted = goalstoday.filter(completed=True).count()
         lasttherapy = Therapy.objects.filter(user=request.user).order_by('-date').first()
@@ -79,7 +79,8 @@ def goals(request):
 
 def updategoal(request):
     if request.method == 'POST':
-        goal = Goal.objects.get(id=request.POST['goal'])
+        print(request.POST)
+        goal = GoalDay.objects.get(id=request.POST['id'])
         goal.completed = not goal.completed
         goal.save()
         return HttpResponse('Success')

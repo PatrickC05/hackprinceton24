@@ -89,7 +89,7 @@
     </form>
 </div>
 <script>
-    function typeText(element, text, speed=200) {
+    function typeText(element, text, speed=12) {
         let i = 0;
 
         function type() {
@@ -104,59 +104,59 @@
     }
 
     async function submitForm() {
-    const userInputElement = document.getElementById('userInput');
-    const userInput = userInputElement.value;
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    const outputBox = document.getElementById('outputBox');
-    
-    if (!userInput.trim()) {
-        alert("Please enter something before submitting.");
-        return;
-    }
-
-    outputBox.innerHTML += "<br><br><strong>You:</strong> " + userInput;
-    userInputElement.value = "";
-    outputBox.scrollTop = outputBox.scrollHeight;
-
-    let thinkingMessage = document.createElement("div");
-    thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> ";
-    outputBox.appendChild(thinkingMessage);
-
-    try {
-        const response = await fetch("{% url 'respond' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': csrfToken
-            },
-            body: new URLSearchParams({
-                'user_input': userInput
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error("Network response was not ok " + response.statusText);
-        }
-
-        const result = await response.json();
-
-        // Use typeText to gradually display the assistant's response
-        typeText(thinkingMessage, result.response || "No response from server.");
+        const userInputElement = document.getElementById('userInput');
+        const userInput = userInputElement.value;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const outputBox = document.getElementById('outputBox');
         
-        outputBox.scrollTop = outputBox.scrollHeight;
-
-        // Play the audio response if available
-        if (result.audio) {
-            let audioElement = new Audio("data:audio/mp3;base64," + result.audio);
-            audioElement.play();
+        if (!userInput.trim()) {
+            alert("Please enter something before submitting.");
+            return;
         }
 
-    } catch (error) {
-        console.error("Error:", error);
-        thinkingMessage.innerHTML = "<br><strong>Error:</strong> Unable to submit the form.";
+        outputBox.innerHTML += "<br><br><strong>You:</strong> " + userInput;
+        userInputElement.value = "";
         outputBox.scrollTop = outputBox.scrollHeight;
+
+        let thinkingMessage = document.createElement("div");
+        thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> ";
+        outputBox.appendChild(thinkingMessage);
+
+        try {
+            const response = await fetch("{% url 'respond' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: new URLSearchParams({
+                    'user_input': userInput
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error("Network response was not ok " + response.statusText);
+            }
+
+            const result = await response.json();
+
+            // Use typeText to gradually display the assistant's response
+            typeText(thinkingMessage, result.response || "No response from server.");
+            
+            outputBox.scrollTop = outputBox.scrollHeight;
+
+            // Play the audio response if available
+            if (result.audio) {
+                let audioElement = new Audio("data:audio/mp3;base64," + result.audio);
+                audioElement.play();
+            }
+
+        } catch (error) {
+            console.error("Error:", error);
+            thinkingMessage.innerHTML = "<br><strong>Error:</strong> Unable to submit the form.";
+            outputBox.scrollTop = outputBox.scrollHeight;
+        }
     }
-}
 
     document.getElementById('userInput').addEventListener("keypress", function(event) {
         if (event.key === "Enter" && !event.shiftKey) {
@@ -196,7 +196,7 @@
                         outputBox.appendChild(userAudioMessage);
 
                         let thinkingMessage = document.createElement("div");
-                        thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> ...";
+                        thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> ";
                         outputBox.appendChild(thinkingMessage);
                         outputBox.scrollTop = outputBox.scrollHeight;
 
@@ -234,13 +234,17 @@
             });
 
             const result = await response.json();
+
+            // Display the user's audio message text instantly
             userAudioMessage.innerHTML = "<br><br><strong>You:</strong> " + (result.text || "[Audio Message]");
-            thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> " + (result.response || "No response from server.");
+            
+            // Use the typing effect for the assistant's response (thinkingMessage)
+            typeText(thinkingMessage, result.response || "No response from server.", 50);
+
             outputBox.scrollTop = outputBox.scrollHeight;
 
             // Play the audio response if available
             if (result.audio) {
-                console.log("Here!")
                 let audioElement = new Audio("data:audio/mp3;base64," + result.audio);
                 audioElement.play();
             }
