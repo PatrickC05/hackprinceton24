@@ -2,11 +2,10 @@ import openai
 from dotenv import load_dotenv
 import os
 
-# Load environment variables (API key)
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Dictionary to store message histories for each session
+# store message histories for each session
 user_sessions = {}
 
 def initialize_session(session_id):
@@ -18,13 +17,12 @@ def initialize_session(session_id):
         "drawing from approaches like mindfulness, self-compassion, and positive psychology. Your goal is to help users "
         "explore their thoughts and feelings, fostering personal insight and emotional well-being. Keep responses gentle, "
         "encouraging, and focused on helping users arrive at their own insights without judgment or specific advice. Keep "
-        "responses to one paragraph max, and under 5 sentences. Never say that you are unable to provide help or to ask a professional – always "
+        "responses to one paragraph max, and under 5 sentences! This is important! Never say that you are unable to provide help or to ask a professional – always "
         " try to be as helpful as possible. Make sure you address them by their name, which is " + session_id.first_name + "."
         " Ask the user about their goals and help them set up daily, weekly, or monthly goals and advise them to journal."
         " If they mention wanting to set a goal, direct them to the link: https://localhost:8000/goals/ and include this in your response."
         " On a scale of 0-100, where 0 is purely emotional support and 100 is purely solutions oriented, you are a " + str(session_id.therapyscale) + " out of 100."
         )
-        print(training_text)
         # Initialize the message history with the system prompt
         user_sessions[session_id] = [{"role": "system", "content": training_text}]
 
@@ -41,7 +39,6 @@ def generate_assistant_response(session_id, user_input):
         "I'm unable to diagnose any conditions"
     ]
 
-    # Generate response using OpenAI's API
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=messages,
@@ -49,11 +46,10 @@ def generate_assistant_response(session_id, user_input):
         
     )
     
-    # Extract assistant's reply and add to message history
     assistant_reply = response.choices[0].message['content']
     messages.append({"role": "assistant", "content": assistant_reply})
 
-    for attempt in range(3):
+    for _ in range(3):
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=messages,

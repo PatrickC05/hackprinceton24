@@ -1,12 +1,12 @@
 .goal-input {
-    width: 400px;  /* Bigger width for the textbox */
-    height: 50px;  /* Taller height for the textbox */
-    font-size: 16px; /* Font size for the text */
-    padding: 10px;  /* Padding inside the text box */
-    border-radius: 5px; /* Rounded corners */
-    border: 1px solid #ccc; /* Border color */
-    display: block;  /* Makes the input field take full width available */
-    margin: 10px auto; /* Centers the input box */
+    width: 400px;
+    height: 50px;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    display: block;
+    margin: 10px auto;
 }
 
 /* Style for the submit button */
@@ -18,12 +18,12 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    display: block; /* Makes the button align center */
-    margin: 10px auto; /* Centers the submit button */
+    display: block;
+    margin: 10px auto;
 }
 
 .submit-button:hover {
-    background-color: #45a049; /* Darker shade when hovering */
+    background-color: #45a049;
 }
 
 /* Style for the frequency dropdown */
@@ -48,7 +48,7 @@
 
 /* Style for the plus button */
 .new-goal-button {
-    font-size: 24px; /* Larger font size for the plus button */
+    font-size: 24px;
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
@@ -58,7 +58,7 @@
 }
 
 .new-goal-button:hover {
-    background-color: #007bff; /* Darker shade when hovering */
+    background-color: #007bff;
 }
 
 
@@ -66,7 +66,7 @@
 #goalContainer {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center-align the goal input and submit button */
+    align-items: center;
 }
 
 /* General button styling */
@@ -83,7 +83,7 @@
 }
 
 .home-view-goal, .new-goal-button {
-    flex: 0 0 calc(33.33% - 14px);  /* Exact 3 per row with gap consideration */
+    flex: 0 0 calc(33.33% - 14px);
 }
 
 #goalContainer {
@@ -115,13 +115,13 @@
 
 /* Green Plus Button and its container */
 #newGoalButton {
-    background-color: green; /* Green background */
-    color: white; /* White text for the plus sign */
+    background-color: green;
+    color: white;
     border: none;
-    border-radius: 50%; /* Circular button */
-    font-size: 50px; /* Increase font size for a bigger plus sign */
-    width: 70px; /* Increase button width */
-    height: 70px; /* Increase button height */
+    border-radius: 50%;
+    font-size: 50px;
+    width: 70px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -129,7 +129,7 @@
 }
 
 #newGoalButton:hover {
-    background-color: darkgreen; /* Darker green on hover */
+    background-color: darkgreen;
 }
 
 /* Green form container */
@@ -142,10 +142,11 @@
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
+    border: 1px solid #000;
 }
 
 .goal-input, .frequency-select, .date-picker {
-    background-color: #e7f9e7; /* Light green background for inputs */
+    background-color: #e7f9e7;
     border-radius: 5px;
 }
 
@@ -162,3 +163,4 @@
 .submit-button:hover {
     background-color: darkgreen;
 }
+

@@ -15,7 +15,6 @@
     <div class="profile-container">
         <h2>Edit Profile</h2>
         <form class="profile-form">
-            <!-- IDK IF THESE ARE RIGHT INFO GRABBERS/SAVING CORRECTLY -->
             <label for="first-name">First Name</label>
             <input type="text" id="first-name" name="first-name" value= "{{ user.first_name }}">
     
@@ -25,7 +24,6 @@
             <label for="username">Username</label>
             <input type="text" id="username" name="username" value= "{{ user.username }}">
             
-            <!-- IDK HOW TO UNHASH THIS -->
             <label for="password">Password</label>
             <input type="password" id="password" name="password" value= "{{ user.password }}">
     
@@ -35,7 +33,6 @@
             <label for="phone">Phone Number (optional)</label>
             <input type="tel" id="phone" name="phone" value= " {{ user.phone }}">
 
-            <!-- for slider in sliders -->
             <div class="slider-container">
                 <label class="slider-label">SLIDER NAME</label>
                 <div class="slider-wrapper">
@@ -52,10 +49,6 @@
                     <span class="slider-right-label">Option 2</span>
                 </div>
             </div>
-    
-            <!-- END FOR LOOP -->
-            
-            <!-- THIS DOESNT DO SHIT RN -->
             <button type="submit" class="profile-save-button">Save Changes</button>
         </form>
     </div>

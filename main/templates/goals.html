@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/goals.css' %}">
-    <title>Hello World</title>
+    <title>Goals</title>
+    <link rel="icon" href="{% static 'favicon.png' %}">
 </head>
 <body>
     {% if user.is_authenticated %}
@@ -25,7 +26,7 @@
                 {% for goal in goals %}
                     <div class="home-view-goal">
                         <h2>{{ goal.name }}</h2>
-                        <h3> You are {{ goal.completed }} for {{ goal.days }}</h3>
+                        <h3 class="completions">You are {{ goal.completed }} for {{ goal.days }}</h3>
                         <form action="{% url 'updategoal' %}" method="post" class="mark-success">
                             {% csrf_token %}
                             <input type="hidden" name="goal_id" value="{{ goal.id }}">
@@ -36,27 +37,44 @@
 
                 <script>
                     document.querySelectorAll(".mark-success").forEach(form => {
+                        console.log(form)
                         form.onsubmit = function(event) {
                             event.preventDefault();
                             const goalId = this.querySelector("input[name=goal_id]").value;
                             const button = this.querySelector("button");
-                            console.log(goalId);
 
                             fetch("{% url 'updategoal' %}", {
                                 method: "POST",
                                 headers: {
                                     "X-CSRFToken": getCookie("csrftoken")
-                                }
+                                },
                                 body: JSON.stringify({
                                     goal_id: goalId
                                 }),
                             })
-                            .then(response => response.json())
-                            .then(result => {
-                                if (result.success) {
-                                    button.textContent = `Mark ${result.completed ? "un" : ""}successful`;
+                            .then(response => {
+                                if (response.ok) {
+                                    if (button.textContent.includes("Mark successful")) {
+                                        button.textContent = "Mark unsuccessful";
+                                        completions = form.parentElement.querySelector(".completions");
+                                        console.log(completions.textContent.split(" "))
+                                        num = parseInt(completions.textContent.split(" ")[2]);
+                                        total = parseInt(completions.textContent.split(" ")[4]);
+                                        console.log(num, total)
+                                        completions.textContent = "You are " + (num + 1) + " for " + total;
+                                    } else {
+                                        button.textContent = "Mark successful";
+                                        completions = form.parentElement.querySelector(".completions");
+                                        num = parseInt(completions.textContent.split(" ")[2]);
+                                        total = parseInt(completions.textContent.split(" ")[4]);
+                                        console.log(num, total)
+                                        completions.textContent = "You are " + (num - 1) + " for " + total;
+                                    }
                                 }
-                            });
+                                throw new Error("Network response was not ok.");
+                            }
+                            );
+                            event.preventDefault();
                         };
                     });
 
@@ -88,7 +106,7 @@
                             <option value="weekly">Weekly</option>
                             <option value="monthly">Monthly</option>
                         </select>
-                        <label for="goalEndDate">Goal End Date</label>
+                        <label for="goalEndDate" style="font-size: 16px;">Goal End Date</label>
                         <input type="date" class="date-picker" name="date" id="goalEndDate" required>
                         <button type="submit" class="submit-button">Submit</button>
                     </form>
@@ -104,7 +122,7 @@
                 // Toggle form visibility and the plus button
                 if (form.style.display === "none" || form.style.display === "") {
                     form.style.display = "block";
-                    button.style.display = "none"; // Hide the plus button
+                    button.style.display = "none";
                 }
             };
 

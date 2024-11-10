@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/journal.css' %}">
-    <title>Hello World</title>
+    <title>Journal</title>
+    <link rel="icon" href="{% static 'favicon.png' %}">
 </head>
 <body>
     <div class="title">{{ user.first_name }}'s Journal</div>
@@ -18,17 +19,13 @@
         <button type="logout" class="logout-button">Log Out</button>
     </form>
     <div class="book-container">
-        <!-- Left Page: Previous Experiences -->
         <div class="book-page left-page">
             <h2>Past Journal Entries</h2>
 
-            <!-- Date Above View-Only Textbox (matched style with the other date) -->
              <div class="previous-entries">
              {% for entry in journal %}
                 <div class="previous-entry">
                     <p class="date">Date: {{ entry.date }}</p>
-
-                    <!-- View-Only Textbox Above Arrows -->
                     <textarea class="view-only-textbox" readonly>
                         {{ entry.entry }}
                     </textarea>
@@ -36,18 +33,13 @@
 
             {% endfor %}
             </div>
-
-            <!-- Arrows for navigating between journal entries -->
             <div class="arrows-container">
                 <button class="arrow-button" id="prevButton">&#8592;</button>
                 <button class="arrow-button" id="nextButton">&#8594;</button>
             </div>
         </div>
-    
-        <!-- Right Page: Journal Entry Form -->
         <div class="book-page right-page">
             <p class="date">Date: {{ today }}</p>
-            <!-- CHANGE FORM TO GET GPT SUMMARY -->
             <form action="{% url 'journal' %}" method="post">
                 {% csrf_token %}
                 <textarea class="journal-textarea" name="journal_entry" placeholder="Write your thoughts here...">{% if todayjournal %}{{ todayjournal.entry }}{% endif %}</textarea>
@@ -57,20 +49,19 @@
     </div>
 
     <script>
-        let currentEntryIndex = 0;  // Tracks the current visible entry
+        let currentEntryIndex = 0;
 
-        // Get all the previous entries
+
         const entries = document.querySelectorAll('.previous-entry');
 
-        // Show the first entry by default
+    
         if (entries.length > 0) {
             entries[currentEntryIndex].classList.add('active');
         }
 
-        // Previous button functionality
+    
         document.getElementById('prevButton').onclick = function() {
             if (entries.length > 0) {
-                // Hide the current entry
                 entries[currentEntryIndex].classList.remove('active');
                 currentEntryIndex = (currentEntryIndex +1) % entries.length;  // Loop to the last entry if at the beginning
                 entries[currentEntryIndex].classList.add('active');
@@ -80,7 +71,6 @@
         // Next button functionality
         document.getElementById('nextButton').onclick = function() {
             if (entries.length > 0) {
-                // Hide the current entry
                 entries[currentEntryIndex].classList.remove('active');
                 currentEntryIndex = (currentEntryIndex - 1 + entries.length) % entries.length;  // Loop to the first entry if at the end
                 entries[currentEntryIndex].classList.add('active');

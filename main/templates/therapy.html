@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/therapy.css' %}">
-    <title>Hello World</title>
+    <title>Therapy</title>
+    <link rel="icon" href="{% static 'favicon.png' %}">
 </head>
 <body>
 <div class="container">
@@ -32,7 +33,7 @@
                 <label class="switch" for="voiceToggle" id="voiceLabel">Voice: {% if user.malevoice %}Male{% else %}Female{% endif %}</label>
                 <input type="range" min="0" max="1" id="voiceToggle" name="voice" value="{% if user.malevoice %}1{% else %}0{% endif %}">
             </div>
-            <button type="submit" class="save-prefs-button" id="preferencesubmit">Save preferences</button>
+             <button type="submit" class="save-prefs-button" id="preferencesubmit">Save preferences</button>
         </form>
     </div>
 
@@ -89,19 +90,46 @@
     </form>
 </div>
 <script>
-    function typeText(element, text, speed=12) {
+    function typeText(element, htmlText, speed) {
+        let tempDiv = document.createElement("div");
+        tempDiv.innerHTML = htmlText;
+        let contentNodes = Array.from(tempDiv.childNodes);
+
         let i = 0;
 
-        function type() {
-            if (i < text.length) {
-                outputBox.scrollTop = outputBox.scrollHeight;
-                element.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(type, speed);
+        function typeNode() {
+            if (i < contentNodes.length) {
+                let node = contentNodes[i];
+                if (node.nodeType === Node.TEXT_NODE) {
+                    typeTextNode(element, node, speed);
+                } else {
+                    let clonedNode = node.cloneNode(true);
+                    element.appendChild(clonedNode);
+                    i++;
+                    setTimeout(typeNode, speed);
+                }
             }
         }
 
-        type();
+        function typeTextNode(element, textNode, speed) {
+            let text = textNode.textContent;
+            let j = 0;
+
+            function typeCharacter() {
+                if (j < text.length) {
+                    element.innerHTML += text.charAt(j);
+                    outputBox.scrollTop = outputBox.scrollHeight;
+                    j++;
+                    setTimeout(typeCharacter, speed);
+                } else {
+                    i++;
+                    setTimeout(typeNode, speed);
+                }
+            }
+            typeCharacter();
+        }
+
+        typeNode();
     }
 
     async function submitForm() {
@@ -120,7 +148,9 @@
         outputBox.scrollTop = outputBox.scrollHeight;
 
         let thinkingMessage = document.createElement("div");
-        thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> ";
+        outputBox.scrollTop = outputBox.scrollHeight;
+        thinkingMessage.innerHTML = "<br><strong>JournEase:</strong> ";
+        outputBox.scrollTop = outputBox.scrollHeight;
         outputBox.appendChild(thinkingMessage);
 
         try {
@@ -146,7 +176,7 @@
                 .replace('https://localhost:8000/goals/', '<a href="{% url "goals" %}">Goals</a>');
 
             // Use typeText to gradually display the modified assistant's response
-            typeText(thinkingMessage, modifiedResponse);
+            typeText(thinkingMessage, modifiedResponse, 15);
             outputBox.scrollTop = outputBox.scrollHeight;
 
             // Play the audio response if available
@@ -200,7 +230,7 @@
                         outputBox.appendChild(userAudioMessage);
 
                         let thinkingMessage = document.createElement("div");
-                        thinkingMessage.innerHTML = "<br><strong>LeSisstant:</strong> ";
+                        thinkingMessage.innerHTML = "<br><strong>JournEase:</strong> ";
                         outputBox.appendChild(thinkingMessage);
                         outputBox.scrollTop = outputBox.scrollHeight;
 
@@ -239,11 +269,15 @@
 
             const result = await response.json();
 
+            // Replace URL in the result response text
+            const modifiedResponse = (result.response || "No response from server.")
+                .replace('https://localhost:8000/goals/', '<a href="{% url "goals" %}">Goals</a>');
+            
             // Display the user's audio message text instantly
             userAudioMessage.innerHTML = "<br><br><strong>You:</strong> " + (result.text || "[Audio Message]");
             
             // Use the typing effect for the assistant's response (thinkingMessage)
-            typeText(thinkingMessage, result.response || "No response from server.", 50);
+            typeText(thinkingMessage, modifiedResponse, 55);
 
             outputBox.scrollTop = outputBox.scrollHeight;
 
@@ -259,12 +293,6 @@
             outputBox.scrollTop = outputBox.scrollHeight;
         }
     }
-
-    window.addEventListener('beforeunload', function() {
-        if (isRecording && mediaRecorder) {
-            mediaRecorder.stop();
-        }
-    });
 </script>
 </body>
 </html>

@@ -6,12 +6,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <title>Hello World</title>
+    <title>JournEase</title>
+    <link rel="icon" href="{% static 'favicon.png' %}">
 </head>
 <body>
     <!-- Main Header Section -->
     <header>
-        <div class="title">LeSisstant</div>
+        <div class="title">JournEase</div>
     </header>
 
     <!-- Subwindows Section -->
@@ -28,15 +29,16 @@
                 <div class="goal">
                     <h3>{{ goal.goal.name }}</h3>
                     {% if goal.completed %}
-                    <p>✅</p> <!-- Green checkmark for completed -->
+                    <p>✅</p>
                     {% else %}
-                    <p>❌</p> <!-- Red X for not completed -->
+                    <p>❌</p>
                     {% endif %}
                 </div>
                 {% endfor %}
             </div>
             <div class="goal-description">
-                <h3>You have completed {{ goalscompleted }} out of your {{ count }} goals today </h3>
+                <br></br>
+                <h3>You have completed {{ goalscompleted }} out of your {{ count }} goals today.</h3>
             </div>
             <form action="{% url 'goals' %}">
                 <button type="submit" class="goals-button-home">View My Goals</button>
@@ -44,6 +46,7 @@
         </div>
         <div class="main-option therapy">
             <h2>Therapy</h2>
+            <h3>How are you doing today?</h3>
             <form action="{% url 'therapy' %}">
                 <button type="submit" class="therapy-button">Open Therapy</button>
             </form>
@@ -72,7 +75,7 @@
     </div>
 
     <div class="signup-container">
-        <h2> Join LeSisstant! Sign up here</h2>
+        <h2> Join JournEase! Sign up here</h2>
         <form action="{% url 'signup' %}">
             <button type="submit">Sign Up</button>
         </form>

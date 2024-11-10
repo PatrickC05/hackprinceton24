@@ -8,6 +8,7 @@ import requests
 import os
 import base64
 from dotenv import load_dotenv
+import json
 
 
 # Create your views here.
@@ -79,10 +80,14 @@ def goals(request):
 
 def updategoal(request):
     if request.method == 'POST':
-        goal = GoalDay.objects.get(id=request.POST['goal_id'])
-        goal.completed = not goal.completed
-        goal.save()
-        return HttpResponse('Success')
+        body = request.body.decode('utf-8')
+        body = json.loads(body)
+        id = body['goal_id']
+        goal = Goal.objects.get(id=id)
+        goalday = GoalDay.objects.get(goal=goal, date=datetime.date.today())
+        goalday.completed = not goalday.completed
+        goalday.save()
+        return HttpResponse('Success', status=200)
     return HttpResponseNotFound()
 
 def therapy(request):
