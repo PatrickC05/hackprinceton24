@@ -27,7 +27,7 @@
                 <div class="goal">
                     <h3>{{ goal.goal.name }}</h3>
                     {% if goal.completed %}
-                    <p>✔️</p> <!-- Green checkmark for completed -->
+                    <p> ✅</p> <!-- Green checkmark for completed -->
                     {% else %}
                     <p>❌</p> <!-- Red X for not completed -->
                     {% endif %}
@@ -43,20 +43,13 @@
         </div>
         <div class="main-option therapy">
             <h2>Therapy</h2>
-            {% if lasttherapy %}
-            <p> {{ lasttherapy.date }} Therapy Session Summary:</p>
-            <p>{{ lasttherapy.summary }}</p>
-            {% else %}
-            <p>You have not had a therapy session yet.</p>
-            {% endif %}
-    
             <form action="{% url 'therapy' %}">
                 <button type="submit" class="therapy-button">Open Therapy</button>
             </form>
         </div>
         <div class="main-option journal">
             <h2>Journal</h2>
-            <p>Past entries</p>
+
             <div class="journal-entries">
                 {% for entry in journal|slice:":5" %}
                 <div class="journal-entry">

@@ -50,6 +50,7 @@
                 if (!response.ok) {
                     throw new Error("Network response was not ok " + response.statusText);
                 }
+                alert("Preferences saved successfully.");
             }).catch(error => {
                 console.error("Error:", error);
                 alert("Unable to save preferences.");

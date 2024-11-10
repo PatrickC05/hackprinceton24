@@ -50,7 +50,7 @@
 .new-goal-button {
     font-size: 24px; /* Larger font size for the plus button */
     padding: 10px 20px;
-    background-color: #4CAF50;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
@@ -58,8 +58,9 @@
 }
 
 .new-goal-button:hover {
-    background-color: #45a049; /* Darker shade when hovering */
+    background-color: #007bff; /* Darker shade when hovering */
 }
+
 
 /* Align form elements centrally */
 #goalContainer {
@@ -73,4 +74,89 @@
     padding: 10px;
     font-size: 16px;
     border-radius: 5px;
+}
+
+.goals-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.home-view-goal, .new-goal-button {
+    flex: 0 0 calc(33.33% - 14px);  /* Exact 3 per row with gap consideration */
+}
+
+#goalContainer {
+    position: absolute;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.goal-input, .frequency-select, .date-picker {
+    margin: 5px 0;
+    width: 100%;
+}
+
+/* Pink boxes for all the other elements */
+.home-view-goal {
+    background-color: pink;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.goals-button {
+    background-color: pink;
+    color: black;
+}
+
+/* Green Plus Button and its container */
+#newGoalButton {
+    background-color: green; /* Green background */
+    color: white; /* White text for the plus sign */
+    border: none;
+    border-radius: 50%; /* Circular button */
+    font-size: 50px; /* Increase font size for a bigger plus sign */
+    width: 70px; /* Increase button width */
+    height: 70px; /* Increase button height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+#newGoalButton:hover {
+    background-color: darkgreen; /* Darker green on hover */
+}
+
+/* Green form container */
+#newGoalContainer {
+    background-color: #007bff;
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.goal-input, .frequency-select, .date-picker {
+    background-color: #e7f9e7; /* Light green background for inputs */
+    border-radius: 5px;
+}
+
+/* Submit button with green style */
+.submit-button {
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.submit-button:hover {
+    background-color: darkgreen;
 }
