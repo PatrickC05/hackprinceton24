@@ -11,6 +11,5 @@ urlpatterns = [
     path('therapy/', views.therapy, name='therapy'),
     path('profile/', views.profile, name='profile'),
     path('journal/', views.journal, name='journal'),
-    path('test/', views.test, name='test'),
     path('respond/', views.respond, name='respond')
 ]

@@ -76,8 +76,6 @@ def transcribe_audio(audio_path):
 
 
 
-
-
 def main(audio_file):
     # Record and save raw audio
     # audio = record_until_silence()

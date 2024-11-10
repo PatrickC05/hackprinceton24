@@ -27,9 +27,6 @@
                     <h2>{{ goal.name }}</h2>
                     <h3> You are {{ goal.completed }} for {{ goal.days }}</h3>
                     <form action="{% url 'goals' %}">
-                        <button type="submit" class="goals-button">Calendar</button>
-                    </form>
-                    <form action="{% url 'goals' %}">
                         <button type="submit" class="goals-button">Log (Un)Successful</button>
                     </form>
                 </div>

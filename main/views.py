@@ -3,8 +3,10 @@ from django.contrib.auth import authenticate, login, logout
 from main.models import User, Goal, GoalDay, Journal, Therapy
 from django.http import JsonResponse, HttpResponseNotFound, HttpResponse
 import datetime
-from main.util import speechtotext
+from main.util import speechtotext, api
+from google.cloud import texttospeech
 import os
+import base64
 
 
 # Create your views here.
@@ -77,7 +79,8 @@ def goals(request):
 
 
 def therapy(request):
-    return render(request, 'therapy.html')
+    today = datetime.date.today()
+    return render(request, 'therapy.html', {'today': today})
 
 def new_goal(request):
     return render(request, 'new_goal.html')
@@ -96,6 +99,7 @@ def journal(request):
         else:
             Journal.objects.create(user=request.user, date=today, entry=request.POST['journal_entry'])
         return redirect('journal')
+    journal = journal.filter(date__lt=today).order_by('-date')
     return render(request, 'journal.html', {'today': today, 'journal': journal, 'todayjournal': todayjournal})
 
 def respond(request):
@@ -108,21 +112,39 @@ def respond(request):
             speechtotext.convert_audio('temp.wav', 'temp_converted.wav')
 
             transcription = speechtotext.transcribe_audio('temp_converted.wav')
-            
             os.remove('temp.wav')
             os.remove('temp_converted.wav')
+
         else:
-            user_input = request.POST.get('user_input', '')
-        
-            if not user_input:
-                return JsonResponse({'text': 'No input provided'})
-            else:
-                transcription = user_input
-        
-        return JsonResponse({'text': transcription})
+            transcription = request.POST.get('user_input', '')
             
+            if not transcription:
+                return JsonResponse({'text': 'No input provided', 'response': ''})
+
+        # Generate the assistant's response
+        api.initialize_session(request.user)
+        assistant_response = api.generate_assistant_response(request.user, transcription)
+
+        if audio:
+            client = texttospeech.TextToSpeechClient()
+
+            # Set up the request for Text-to-Speech
+            synthesis_input = texttospeech.SynthesisInput(text=transcription)
+            voice = texttospeech.VoiceSelectionParams(
+                language_code="en-US",
+                name="en-US-Wavenet-J",
+                ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
+            )
+            audio_config = texttospeech.AudioConfig(
+                audio_encoding=texttospeech.AudioEncoding.MP3
+            )
+
+            # Perform the Text-to-Speech request
+            response = client.synthesize_speech(
+                input=synthesis_input, voice=voice, audio_config=audio_config
+            )
+
+        # Return both the transcription and the assistant's response
+        return JsonResponse({'text': transcription, 'response': assistant_response})
 
     return HttpResponseNotFound()
-
-def test(request):
-    return render(request, 'test.html')

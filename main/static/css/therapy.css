@@ -1,0 +1,67 @@
+.button-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start;
+}
+.submit-button {
+    padding: 8px 16px;
+    line-height: 1.2;
+    flex-grow: 1;
+    min-width: 100px;
+}
+.mic-button {
+    background-color: #dc3545;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    flex-shrink: 0;
+}
+.mic-button svg {
+    width: 18px;
+    height: 18px;
+}
+.output-box {
+    overflow-y: auto;
+    max-height: 400px;
+    background-color: #e0b3ff;
+    padding: 20px;
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+}
+@media (max-width: 600px) {
+    .submit-button, .mic-button {
+        min-width: 80px;
+        flex-grow: 1;
+    }
+}
+
+.slider-labels {
+    width: 80%;
+}
+
+#scale {
+    width: 80%;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start;
+    text-align: center;
+    margin: 0;
+    width: 100%;
+}
+
+#voiceToggle {
+    width: 60px;
+}

@@ -22,16 +22,13 @@ def initialize_session(session_id):
         " try to be as helpful as possible. Do not give direct advice, guide them in the right direction. "
         " Ask the user about their goals and help them set up daily, weekly, or monthly goals and advise them to journal."
         " If they mention wanting to set a goal, direct them to the link: https://localhost:8000/goals/ and include this in your response."
-)
+        )
         # Initialize the message history with the system prompt
         user_sessions[session_id] = [{"role": "system", "content": training_text}]
 
 
-def get_response(session_id):
-    user_input = input("User: ")
-    if user_input.lower() == "quit":
-        print("Goodbye!")
-        return
+def generate_assistant_response(session_id, user_input):
+    
 
     messages = user_sessions[session_id]
     messages.append({"role": "user", "content": user_input})
@@ -66,26 +63,10 @@ def get_response(session_id):
         assistant_reply = response.choices[0].message['content']
         
         if not any(phrase in assistant_reply for phrase in deflective_phrases):
-            print("\n")
-            print(attempt)
-            print("\n")
             messages.append({"role": "assistant", "content": assistant_reply})
             return assistant_reply
     
     return "I'm here to listen and provide support. Let's explore whatever is on your mind together."
-
-# Main chatbot loop
-session_id = "test"
-
-initialize_session(session_id)
-assistant_reply = get_response(session_id)
-print("Assistant:", assistant_reply)
-
-assistant_reply = get_response(session_id)
-print("Assistant:", assistant_reply)
-
-assistant_reply = get_response(session_id)
-print("Assistant:", assistant_reply)
 
 
     

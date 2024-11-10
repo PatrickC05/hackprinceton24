@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     phone = models.CharField(max_length=10, null=True)
     therapyscale = models.IntegerField(null=True)
+    malevoice = models.BooleanField(default=False)
 
 class Goal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

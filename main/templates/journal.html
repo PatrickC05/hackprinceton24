@@ -6,119 +6,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/journal.css' %}">
     <title>Hello World</title>
-    <style>
-        /* Styles for the arrows and the previous entries container */
-        .arrows-container {
-            display: flex;
-            justify-content: center;  /* Center the arrows horizontally */
-            gap: 5px; /* Space between arrows */
-            position: absolute;  /* Position it at the bottom of the left page */
-            bottom: 10%;  /* Adjust this value to move the arrows higher or lower */
-            left: 0;  /* Ensure it aligns to the left of the .left-page */
-            width: 100%; /* Full width of the left page */
-            z-index: 10; /* Make sure arrows are above other content */
-        }
-    
-        .arrow-button {
-            background-color: transparent;
-            border: none;
-            font-size: 30px;  /* Larger arrow size */
-            cursor: pointer;
-            color: #333;  /* Default arrow color */
-        }
-    
-        .arrow-button:hover {
-            color: #4CAF50;  /* Green color on hover */
-        }
-    
-        /* Hide the divs by default */
-        .previous-entry {
-            display: none;
-        }
-    
-        /* Show the first entry initially */
-        .previous-entry.active {
-            display: block;
-        }
-    
-        .previous-entries {
-            margin-bottom: 20px;
-            position: relative;
-            padding-bottom: 40px; /* Ensure space for the arrows */
-        }
-    
-        /* Additional styles to position the pages */
-        .book-container {
-            display: flex;
-            justify-content: space-between;
-            width: 80%;  /* Adjust as needed */
-        }
-    
-        .book-page {
-            position: relative;
-            width: 48%; /* Each page takes almost half of the container */
-            padding: 20px;
-        }
-    
-        .left-page {
-            background-color: lightyellow;  /* Light yellow for left page */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-    
-        .right-page {
-            background-color: white;  /* White for right page */
-        }
-    
-        /* Style for the view-only textbox */
-        .view-only-textbox {
-            width: 90%;  /* Take up 90% of the page width */
-            height: 120px; /* Medium height */
-            margin: 20px auto;  /* Center horizontally and space from title/arrows */
-            padding: 10px;
-            background-color: #f4f4f4;  /* Light gray background */
-            border: 1px solid #ddd;
-            resize: none;  /* Disable resizing */
-            font-size: 14px;
-            color: #333;
-            text-align: left;  /* Left align the text inside the textbox */
-            text-indent: 0;  /* No indentation */
-            overflow-y: auto; /* Allow scrolling if content is too long */
-            white-space: pre-line;  /* Prevents unwanted indentation or tabs */
-        }
-
-        /* Style for the date */
-        .date {
-            font-size: 14px; /* Match font size with the other date */
-            color: #666; /* Match the color of the other date */
-            margin-bottom: 10px; /* Space between the date and the textbox */
-        }
-    </style>
 </head>
 <body>
     <div class="title">{{ user.first_name }}'s Journal</div>
     <div class="book-container">
         <!-- Left Page: Previous Experiences -->
         <div class="book-page left-page">
-            <h2>Previous Experiences GPT SUMMARY</h2>
-            <div class="previous-entries">
-                <!-- Content loaded from backend -->
-                {% for experience in previous_experiences %}
-                    <div class="previous-entry">
-                        <p>{{ experience.summary }}</p>
-                    </div>
-                {% endfor %}
-            </div>
+            <h2>Past Journal Entries</h2>
 
             <!-- Date Above View-Only Textbox (matched style with the other date) -->
-            <p class="date">Date: {{ today }}</p>
+             <div class="previous-entries">
+             {% for entry in journal %}
+                <div class="previous-entry">
+                    <p class="date">Date: {{ entry.date }}</p>
 
-            <!-- View-Only Textbox Above Arrows -->
-            <textarea class="view-only-textbox" readonly>
-                This is a view-only content box. It cannot be edited by the user. You can display any relevant content here, such as notes, summaries, or data.
-            </textarea>
+                    <!-- View-Only Textbox Above Arrows -->
+                    <textarea class="view-only-textbox" readonly>
+                        {{ entry.entry }}
+                    </textarea>
+                </div>
+
+            {% endfor %}
+            </div>
 
             <!-- Arrows for navigating between journal entries -->
             <div class="arrows-container">
@@ -155,7 +66,7 @@
             if (entries.length > 0) {
                 // Hide the current entry
                 entries[currentEntryIndex].classList.remove('active');
-                currentEntryIndex = (currentEntryIndex - 1 + entries.length) % entries.length;  // Loop to the last entry if at the beginning
+                currentEntryIndex = (currentEntryIndex +1) % entries.length;  // Loop to the last entry if at the beginning
                 entries[currentEntryIndex].classList.add('active');
             }
         };
@@ -165,7 +76,7 @@
             if (entries.length > 0) {
                 // Hide the current entry
                 entries[currentEntryIndex].classList.remove('active');
-                currentEntryIndex = (currentEntryIndex + 1) % entries.length;  // Loop to the first entry if at the end
+                currentEntryIndex = (currentEntryIndex - 1 + entries.length) % entries.length;  // Loop to the first entry if at the end
                 entries[currentEntryIndex].classList.add('active');
             }
         };
