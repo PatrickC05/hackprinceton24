@@ -442,3 +442,38 @@ input[type="tel"],
     resize: none;
     margin-bottom: 15px;
 }
+
+.goal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    max-width: 400px;
+    font-family: Arial, sans-serif;
+}
+
+.goal h3 {
+    font-size: 18px;
+    font-weight: normal;
+    color: #333;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.goal .status {
+    font-size: 24px;
+    margin-left: 10px;
+}
+
+.completed {
+    color: green;
+}
+
+.not-completed {
+    color: red;
+}
